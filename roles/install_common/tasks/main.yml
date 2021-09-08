@@ -1,0 +1,111 @@
+- include_tasks: 
+    file: default_credentials.yml
+
+- name: Check if Kasm is installed
+  stat: 
+    path: /opt/kasm/current
+  register: kasm_path
+
+- assert:
+    that: 
+      - not kasm_path.stat.exists
+    fail_msg: /opt/kasm/current exists, kasm appears to be installed. Please ensure kasm is uninstalled before continuing.
+
+- set_fact:
+    db_ip: "{{ hostvars[groups['db'][0]]['ansible_default_ipv4']['address'] }}"
+    web_ip: "{{ hostvars[groups['web'][0]]['ansible_default_ipv4']['address'] }}"
+    # IP of the host that ansible is being ran against
+    target_ip: "{{ ansible_default_ipv4.address }}"
+    
+- name: Override manager hostname if configured
+  set_fact:
+    web_ip: "{{ manager_hostname }}"
+  when: manager_hostname is defined
+
+- name: Check if kasm swapfile exists
+  stat:
+    path: /mnt/kasm.swap
+  register: kasm_swapfile
+
+- name: Get current swapsize in bytes
+  # Meminfo outputs in Kb for some reason so we convert to bytes
+  shell: cat /proc/meminfo | grep SwapTotal | awk '{print $2 * 1024}'
+  register: current_swap_size
+
+- set_fact:
+    # We only want to make a swapfile large enough to make up the difference between
+    # the current swapsize and our desired size.
+    new_swap_size: "{{ desired_swap_size | human_to_bytes - current_swap_size.stdout | int }}"
+
+- debug:
+    var: new_swap_size
+
+- name: Run swap tasks
+  include_tasks:
+    file: mkswap.yml
+  when:
+    - new_swap_size | int > 0
+    - not kasm_swapfile.stat.exists
+
+- name: Create temporary directory
+  tempfile:
+    state: directory
+  register: tempdir
+
+# Debian 10 doesn't ship with the ca-certificates package installed by default
+# installing curl is portable to to ensure that ca-certificates is installed
+- name: Ensure we have curl installed
+  package:
+    name: curl
+    state: present
+  become: true
+    
+- name: Download kasm installer
+  get_url:
+    url: "{{ kasm_installer_url }}"
+    dest: "{{ tempdir.path }}/kasm.tar.gz"
+    checksum: "{{ kasm_installer_checksum }}"
+  register: kasm_installer
+
+- name: unarchive kasm installer
+  unarchive:
+    remote_src: yes
+    src: "{{ kasm_installer.dest }}"
+    dest: "{{ tempdir.path }}"
+
+- name: Run Kasm db install tasks
+  include_tasks:
+    file: db_install.yml
+  when: "'db' in group_names"
+
+- name: Run Kasm web install tasks
+  include_tasks:
+    file: web_install.yml
+  when: "'web' in group_names"
+
+- name: Run Kasm agent install tasks
+  include_tasks:
+    file: agent_install.yml
+  when: "'agent' in group_names"
+
+- name: enable the docker service to run at boot
+  service:
+    name: docker
+    enabled: true
+  become: true
+  when: start_docker_on_boot
+  
+- name: Delete temporary directory
+  file:
+    path: "{{ tempdir.path }}"
+    state: absent
+
+- name: Print credentials
+  debug:
+    msg:
+      - "Database Password: {{ database_password }}"
+      - "Redis Password: {{ redis_password }}"
+      - "Manager Token: {{ manager_token }}"
+      - "user@kasm.local password: {{ user_password }}"
+      - "admin@kasm.local password: {{ admin_password }}"
+  run_once: true

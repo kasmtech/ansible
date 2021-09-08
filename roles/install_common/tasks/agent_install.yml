@@ -1,0 +1,10 @@
+- name: Check connection from agent to webserver
+  uri:
+    url: "https://{{ web_ip }}/api/__healthcheck"
+    timeout: 5
+    validate_certs: false
+
+- name: Install agent role
+  command: "bash {{ tempdir.path }}/kasm_release/install.sh -S agent -e -p {{ target_ip }} -m {{ web_ip }} -M {{ manager_token }}"
+  register: web_install
+  become: true

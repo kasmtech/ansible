@@ -1,0 +1,7 @@
+- hosts:
+    - db
+    - web
+    - agent
+  roles:
+    - install_common
+  any_errors_fatal: true

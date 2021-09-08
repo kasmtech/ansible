@@ -1,0 +1,2 @@
+# This generally should be (1g x number_of_sessions / number_of_agents)
+desired_swap_size: 5g
