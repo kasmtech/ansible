@@ -1,0 +1,16 @@
+- name: Check connection from web to postgres on db server
+  wait_for:
+    port: 5432
+    host: "{{ db_ip }}"
+    timeout: 60
+
+- name: Check connection from web to redis on db server
+  wait_for:
+    port: 6379
+    host: "{{ db_ip }}"
+    timeout: 60
+
+- name: Install web role
+  command: "bash {{ tempdir.path }}/kasm_release/install.sh -S app -e -q {{ db_ip }} -Q {{ database_password }} -R {{ redis_password }} -n {{ target_ip }}"
+  register: web_install
+  become: true

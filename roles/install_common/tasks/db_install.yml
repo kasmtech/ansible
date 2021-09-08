@@ -1,0 +1,4 @@
+- name: Install database role
+  command: "bash {{ tempdir.path }}/kasm_release/install.sh -S db -e -Q {{database_password}} -R {{redis_password}} -U {{user_password}} -P {{admin_password}} -M {{manager_token}}"
+  register: db_install
+  become: true

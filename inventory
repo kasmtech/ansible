@@ -1,0 +1,6 @@
+[web]
+ubuntu18-web
+[db]
+ubuntu18-db
+[agent]
+ubuntu18-agent

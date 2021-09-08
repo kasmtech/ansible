@@ -1,0 +1,26 @@
+- name: Create swap file
+  # We can't use falloc because it creates "file with holes"
+  # https://man.archlinux.org/man/swapon.8#Files_with_holes
+  command: "dd if=/dev/zero bs=1M count={{ (new_swap_size | int  / 1024 / 1024) | int }} of=/mnt/kasm.swap"
+  become: true
+
+- name: Set swapfile permissions
+  file:
+    path: /mnt/kasm.swap
+    mode: 0600
+  become: true
+
+- name: Run mkswap command
+  command: mkswap /mnt/kasm.swap
+  become: true
+
+- name: Mount swap on boot
+  lineinfile:
+    path: /etc/fstab
+    line: "/mnt/kasm.swap swap swap defaults 0 0"
+  become: true
+ 
+- name: Run swapon
+  command: swapon /mnt/kasm.swap
+  become: true
+ 
