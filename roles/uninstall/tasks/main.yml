@@ -1,0 +1,83 @@
+- name: Check for kasm service containers
+  shell: docker ps -f name=kasm_* -q
+  register: service_containers
+  changed_when: false
+  become: true
+  ignore_errors: true
+
+- name: Remove any kasm service containers
+  shell: "docker rm -f {{ item }}"
+  become: true
+  ignore_errors: true
+  with_items: "{{ service_containers.stdout_lines }}"
+
+- name: Check for kasm session containers
+  shell: docker container ls -qa --filter=label=kasm.kasmid
+  register: session_containers
+  changed_when: false
+  become: true
+  ignore_errors: true
+  
+- name: Remove any kasm session containers
+  shell: "docker rm -f {{ item }}"
+  ignore_errors: true
+  become: true
+  with_items: "{{ session_containers.stdout_lines }}"
+
+- name: Check for kasm docker network
+  shell: docker network ls -q -f name=kasm_default_network
+  register: kasm_network
+  become: true
+  ignore_errors: true
+  changed_when: false
+
+- name: Remove kasm docker network
+  shell: docker network rm kasm_default_network
+  ignore_errors: true
+  become: true
+  when: kasm_network.stdout | length > 0
+
+- name: Get kasm database docker volume
+  shell: docker volume ls --filter name=kasm_db_* -q
+  ignore_errors: true
+  become: true
+  register: kasm_database
+  changed_when: false
+
+- name: Remove kasm database docker volume
+  shell: "docker volume rm {{ item }}"
+  ignore_errors: true
+  become: true
+  with_items: "{{ kasm_database.stdout_lines }}"
+
+- name: Get kasm docker images
+  shell: |
+    docker images --filter "label=com.kasmweb.image=true" -q
+    docker images kasmweb/nginx -q
+    docker images kasmweb/share -q
+    docker images kasmweb/share-private -q
+    docker images kasmweb/agent -q
+    docker images kasmweb/agent-private -q
+    docker images kasmweb/manager -q
+    docker images kasmweb/manager-private -q
+    docker images kasmweb/api -q
+    docker images kasmweb/api-private -q
+    docker images redis -q
+    docker images postgres -q
+    
+  register: kasm_images
+  become: true
+  ignore_errors: true
+  changed_when: false
+
+- name: Remove kasm docker images
+  shell: "docker rmi {{ item }}"
+  become: true
+  ignore_errors: true
+  with_items: "{{ kasm_images.stdout_lines }}"
+
+- name: Remove kasm install directory
+  file:
+    path: /opt/kasm/
+    state: absent
+  become: true
