@@ -1,0 +1,6 @@
+- hosts:
+    - db
+    - web
+    - agent
+  roles:
+    - uninstall
