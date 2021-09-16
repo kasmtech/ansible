@@ -80,3 +80,29 @@ It has been tested on CentOS 7.9.2009, CentOS 8.4.2105, Debian 9.13, Debian 10.1
     Or, if you have ssh keys copied over to your servers and have NOPASSWD in sudoers you can just run.
 
     `ansible-playbook -u [username] -i inventory uninstall_kasm.yml`
+
+## Kasm Stop/Start/Restart playbooks
+
+These playbooks can be used to start, stop or restart Kasm workspaces services on the DB, WebApp and Agent servers specified in the `inventory` file.
+
+It can be limited to run only on hosts in specific groups by passing `-l [db, web, or agent]` flag.
+
+In the examples `restart_kasm.yml` can be substituted for `start_kasm.yml` or `stop_kasm.yml` for starting or stopping the kasm services respectively.
+
+### Ansible Configuration
+
+1. Open `inventory` file and fill in the hostnames / ips for the servers that will be fulfilling the agent, webapp and db roles. 
+
+2. Run the playbook.
+
+    `ansible-playbook -Kk -u [username] -i inventory restart_kasm.yml`
+
+    Ansible will prompt you for the ssh password and sudo password (will almost always be the same password).
+
+    Or, if you have ssh keys copied over to your servers and have NOPASSWD in sudoers you can just run.
+
+    `ansible-playbook -u [username] -i inventory restart_kasm.yml`
+
+    If you only want to run it against hosts in the 'db' group for example you can run the following:
+
+    `ansible-playbook -u [username] -l db -i inventory restart_kasm.yml`

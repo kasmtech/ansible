@@ -1,0 +1,10 @@
+- hosts:
+    - db
+    - web
+    - agent
+  tasks:
+    - name: Start Kasm Services
+      shell: /opt/kasm/bin/start
+      register: start_output
+      changed_when: '"done" in start_output.stderr'
+      become: true
