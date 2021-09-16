@@ -1,0 +1,21 @@
+- name: Ensure backup directory exists
+  file:
+    path: "{{ remote_backup_dir }}"
+    state: directory
+  become: true
+
+- name: Backup database
+  script: "files/backup.sh {{ remote_backup_dir }} {{ retention_days }}"
+  register: backup_output
+  become: true
+
+# Pull the remote backup file from stdout of the backup script
+- set_fact:
+    remote_backup: "{{ backup_output.stdout_lines[-1:][0] }}"
+
+- name: Copy database backup to ansible host
+  fetch:
+    src: "{{ remote_backup }}"
+    dest: "{{ local_backup_dir }}"
+    flat: true
+  when: local_backup_dir is defined
