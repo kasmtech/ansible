@@ -1,0 +1,5 @@
+- hosts:
+    - db
+  roles:
+    - backup_db
+ 

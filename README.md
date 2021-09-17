@@ -106,3 +106,23 @@ In the examples `restart_kasm.yml` can be substituted for `start_kasm.yml` or `s
     If you only want to run it against hosts in the 'db' group for example you can run the following:
 
     `ansible-playbook -u [username] -l db -i inventory restart_kasm.yml`
+
+## Kasm Database Backup playbook
+
+This playbook can be used to backup the Kasm Workspaces database to a location on the Database server specified by `remote_backup_dir` and optionally to a location on the ansible server specified by `local_backup_dir`. Backups older than `retention_days` are automatically cleaned up.
+
+### Ansible Configuration
+
+1. Open `roles/backup_db/vars/main.yml` and update variables if desired.
+
+2. Open `inventory` file and fill in the hostnames / ips for the servers that will be fulfilling the agent, webapp and db roles. 
+
+3. Run the playbook.
+
+    `ansible-playbook -Kk -u [username] -i inventory backup_db.yml`
+
+    Ansible will prompt you for the ssh password and sudo password (will almost always be the same password).
+
+    Or, if you have ssh keys copied over to your servers and have NOPASSWD in sudoers you can just run.
+
+    `ansible-playbook -u [username] -i inventory backup_db.yml`
