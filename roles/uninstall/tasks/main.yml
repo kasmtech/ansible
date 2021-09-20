@@ -1,5 +1,5 @@
 - name: Check for kasm service containers
-  shell: docker ps -f name=kasm_* -q
+  shell: docker ps -f name=kasm_* -qa
   register: service_containers
   changed_when: false
   become: true
