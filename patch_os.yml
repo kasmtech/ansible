@@ -1,0 +1,12 @@
+- import_playbook: stop_kasm.yml
+
+- hosts:
+    - db
+    - web
+    - agent
+  roles:
+    - patch_os
+
+- import_playbook: stop_kasm.yml
+
+- import_playbook: start_kasm.yml

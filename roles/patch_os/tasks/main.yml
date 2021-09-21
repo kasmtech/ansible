@@ -1,0 +1,17 @@
+
+- name: Update systems with yum package manager
+  yum:
+    name: "*"
+    state: latest
+  notify: Reboot server
+  when:  ansible_pkg_mgr in ("yum", "dnf")
+  become: true
+
+- name: Update system with apt package manager
+  apt:
+    update_cache: yes
+    upgrade: dist
+    autoremove: yes
+  notify: Reboot server
+  when: ansible_pkg_mgr == "apt"
+  become: true

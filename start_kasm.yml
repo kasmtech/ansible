@@ -2,6 +2,8 @@
     - db
     - web
     - agent
+  serial: 1
+  gather_facts: no
   tasks:
     - name: Start Kasm Services
       shell: /opt/kasm/bin/start

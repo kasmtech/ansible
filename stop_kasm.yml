@@ -1,7 +1,9 @@
 - hosts:
-    - db
-    - web
     - agent
+    - web
+    - db
+  serial: 1
+  gather_facts: no
   tasks:
     - name: Stop Kasm Services
       shell: /opt/kasm/bin/stop
