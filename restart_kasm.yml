@@ -1,16 +1,3 @@
-- hosts:
-    - db
-    - web
-    - agent
-  tasks:
-    - name: Stop Kasm Services
-      shell: /opt/kasm/bin/stop
-      register: stop_output
-      changed_when: '"done" in stop_output.stderr'
-      become: true
-    
-    - name: Start Kasm Services 
-      shell: /opt/kasm/bin/start
-      register: start_output
-      changed_when: '"done" in start_output.stderr'
-      become: true
+- import_playbook: stop_kasm.yml
+
+- import_playbook: start_kasm.yml

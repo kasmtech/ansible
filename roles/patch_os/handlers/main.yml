@@ -1,0 +1,5 @@
+
+- name: Reboot server
+  reboot:
+    reboot_timeout: "{{ reboot_timeout_seconds }}"
+  become: true

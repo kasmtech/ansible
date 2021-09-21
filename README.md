@@ -126,3 +126,23 @@ This playbook can be used to backup the Kasm Workspaces database to a location o
     Or, if you have ssh keys copied over to your servers and have NOPASSWD in sudoers you can just run.
 
     `ansible-playbook -u [username] -i inventory backup_db.yml`
+
+## OS Patching Playbook
+
+This playbook is used for patching the underlying OSes on the Kasm Workspace servers. It will patch and reboot the servers if needed.
+
+### Ansible Configuration
+
+1. Open `roles/patch_os/vars/main.yml` and update variables if desired.
+
+2. Open `inventory` file and fill in the hostnames / ips for the servers that will be fulfilling the agent, webapp and db roles. 
+
+3. Run the playbook.
+
+    `ansible-playbook -Kk -u [username] -i inventory patch_os.yml`
+
+    Ansible will prompt you for the ssh password and sudo password (will almost always be the same password).
+
+    Or, if you have ssh keys copied over to your servers and have NOPASSWD in sudoers you can just run.
+
+    `ansible-playbook -u [username] -i inventory patch_os.yml`
