@@ -6,10 +6,8 @@
     path: /opt/kasm/current
   register: kasm_path
 
-- assert:
-    that: 
-      - not kasm_path.stat.exists
-    fail_msg: /opt/kasm/current exists, kasm appears to be installed. Please ensure kasm is uninstalled before continuing.
+- set_fact:
+    kasm_installed: "{{ kasm_path.stat.exists }}"
 
 - set_fact:
     db_ip: "{{ hostvars[groups['db'][0]]['ansible_default_ipv4']['address'] }}"
@@ -31,6 +29,7 @@
   # Meminfo outputs in Kb for some reason so we convert to bytes
   shell: cat /proc/meminfo | grep SwapTotal | awk '{print $2 * 1024}'
   register: current_swap_size
+  changed_when: false
 
 - set_fact:
     # We only want to make a swapfile large enough to make up the difference between
@@ -66,27 +65,37 @@
     dest: "{{ tempdir.path }}/kasm.tar.gz"
     checksum: "{{ kasm_installer_checksum }}"
   register: kasm_installer
+  when:
+    - not kasm_installed
 
 - name: unarchive kasm installer
   unarchive:
     remote_src: yes
     src: "{{ kasm_installer.dest }}"
     dest: "{{ tempdir.path }}"
+  when:
+    - not kasm_installed
 
 - name: Run Kasm db install tasks
   include_tasks:
     file: db_install.yml
-  when: "'db' in group_names"
+  when: 
+    - "'db' in group_names"
+    - not kasm_installed
 
 - name: Run Kasm web install tasks
   include_tasks:
     file: web_install.yml
-  when: "'web' in group_names"
+  when: 
+    - "'web' in group_names"
+    - not kasm_installed
 
 - name: Run Kasm agent install tasks
   include_tasks:
     file: agent_install.yml
-  when: "'agent' in group_names"
+  when: 
+    - "'agent' in group_names"
+    - not kasm_installed
 
 - name: enable the docker service to run at boot
   service:

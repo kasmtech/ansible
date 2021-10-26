@@ -61,6 +61,29 @@ It has been tested on CentOS 7.9.2009, CentOS 8.4.2105, Debian 9.13, Debian 10.1
 
 5. Navigate to the Agents tab, and enable each Agent after it checks in. (May take a few minutes)
 
+### Adding Additional Agent / Webapp hosts to an existing installation
+
+The installation can be "scaled up" after being installed by adding additional hosts to the agent or db roles in the inventory file and rerunning the playbook.
+
+Please ensure that redis_password, manager_token and database_password is set in `install_common/vars/main.yml`
+
+If you did not save the redis_password, manager_token or database_password for your existing installation, they can be obtained using the following methods.
+
+- Existing Database password can be obtained by logging into a webapp host and running the following command:
+
+    ```
+    sudo grep " password" /opt/kasm/current/conf/app/api.app.config.yaml
+    ```
+- Existing Redis password can be obtained by logging into a webapp host and running the following command:
+
+    ```
+    sudo grep "redis_password" /opt/kasm/current/conf/app/api.app.config.yaml
+    ```
+- Existing Manager token can be obtained by logging into an agent host and running the following command:
+    ```
+    sudo grep "token" /opt/kasm/current/conf/app/agent.app.config.yaml
+    ```
+
 ## Kasm Uninstall playbook
 
 This playbook uninstalls Kasm workspaces from DB, WebApp and Agent servers specified in the `inventory` file.
