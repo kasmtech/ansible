@@ -46,8 +46,12 @@ It has been tested on CentOS 7.9.2009, CentOS 8.4.2105, Debian 9.13, Debian 10.1
 1. Open `roles/install_common/vars/main.yml`, `group_vars/agent.yml` and update variables if desired.
 
 2. Open `inventory` file and fill in the hostnames / ips for the servers that will be fulfilling the agent, webapp and db roles. 
+
+3. Download the Kasm Workspaces installer from https://www.kasmweb.com/downloads.html and copy it to `roles/install_common/files`. 
+    
+    Optionally, if doing an offline installation: Download and copy the workspace_images and service_images files to `roles/install_common/files`.
    
-3. Run the deployment.
+4. Run the deployment.
 
     `ansible-playbook -Kk -u [username] -i inventory install_kasm.yml`
 
@@ -57,9 +61,9 @@ It has been tested on CentOS 7.9.2009, CentOS 8.4.2105, Debian 9.13, Debian 10.1
 
     `ansible-playbook -u [username] -i inventory install_kasm.yml`
 
-4. Login to the deployment as admin@kasm.local using the IP of one of the WebApp servers (eg https://192.168.1.2)
+5. Login to the deployment as admin@kasm.local using the IP of one of the WebApp servers (eg https://192.168.1.2)
 
-5. Navigate to the Agents tab, and enable each Agent after it checks in. (May take a few minutes)
+6. Navigate to the Agents tab, and enable each Agent after it checks in. (May take a few minutes)
 
 ### Adding Additional Agent / Webapp hosts to an existing installation
 
