@@ -9,7 +9,7 @@
   delay: 5
 
 - name: Install agent role
-  command: "bash {{ tempdir.path }}/kasm_release/install.sh -S agent -e -p {{ target_ip }} -m {{ web_ip }} -M {{ manager_token }}"
+  command: "bash {{ tempdir.path }}/kasm_release/install.sh -S agent -e -p {{ target_ip }} -m {{ web_ip }} -M {{ manager_token }} {{ '-s ' ~ service_images_copy.dest if service_images_file }} {{ '-w ' ~ workspace_images_copy.dest if workspace_images_file }}"
   register: install_output
   become: true
   retries: 20

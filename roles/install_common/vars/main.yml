@@ -1,6 +1,3 @@
-kasm_installer_url: https://kasm-static-content.s3.amazonaws.com/kasm_release_1.9.0.077388.tar.gz
-kasm_installer_checksum: sha256:d925a20ee949ef6a9759587069983eb3a6d56b0532210e74be75894b2a5915ce
-
 # If you want custom passwords change them below, otherwise they will be auto generated and displayed
 # in a message at the end of the run.
 

@@ -1,0 +1,39 @@
+# List of files in the files directory matching the installer, service_images, and workspace images.
+- set_fact:
+    installer_glob: "{{ lookup('fileglob', '{{role_path}}/files/kasm_workspaces_*.tar.gz', wantlist=True) }}"
+    service_images_glob: "{{ lookup('fileglob', '{{role_path}}/files/kasm_workspaces_service_images*.tar.gz', wantlist=True) }}"
+    workspace_images_glob: "{{ lookup('fileglob', '{{role_path}}/files/kasm_workspaces_workspace_images_*.tar.gz', wantlist=True) }}"
+  delegate_to: localhost
+
+- set_fact:
+    # Our installer glob search will also include service_images and workspace_images so we filter them out with difference()
+    installer_file: "{{ installer_glob | difference(service_images_glob) | difference(workspace_images_glob) | first | default(None) }}"
+    service_images_file: "{{ service_images_glob | first | default(None) }}"
+    workspace_images_file: "{{ workspace_images_glob | first | default(None) }}"
+
+- name: Assert that Kasm installer exists
+  assert:
+    that:
+      - installer_file
+    fail_msg:
+      - "Kasm installer not found"
+      - "Ensure that kasm_workspaces installer tarfile is in {{role_path}}/files/"
+
+- name: unarchive kasm installer
+  unarchive:
+    src: "{{ installer_file }}"
+    dest: "{{ tempdir.path }}"
+
+- name: Copy service images
+  copy:
+    src: "{{ service_images_file }}"
+    dest: "{{ tempdir.path }}"
+  register: service_images_copy
+  when: service_images_file
+
+- name: Copy Workspace images
+  copy:
+    src: "{{ workspace_images_file }}"
+    dest: "{{ tempdir.path }}"
+  register: workspace_images_copy
+  when: workspace_images_file

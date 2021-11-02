@@ -58,21 +58,9 @@
     name: curl
     state: present
   become: true
-    
-- name: Download kasm installer
-  get_url:
-    url: "{{ kasm_installer_url }}"
-    dest: "{{ tempdir.path }}/kasm.tar.gz"
-    checksum: "{{ kasm_installer_checksum }}"
-  register: kasm_installer
-  when:
-    - not kasm_installed
 
-- name: unarchive kasm installer
-  unarchive:
-    remote_src: yes
-    src: "{{ kasm_installer.dest }}"
-    dest: "{{ tempdir.path }}"
+- include_tasks:
+    file: copy_installer.yml
   when:
     - not kasm_installed
 
@@ -108,6 +96,7 @@
   file:
     path: "{{ tempdir.path }}"
     state: absent
+  become: true
 
 - name: Print credentials
   debug:

@@ -11,7 +11,7 @@
     timeout: 60
 
 - name: Install web role
-  command: "bash {{ tempdir.path }}/kasm_release/install.sh -S app -e -q {{ db_ip }} -Q {{ database_password }} -R {{ redis_password }} -n {{ target_ip }}"
+  command: "bash {{ tempdir.path }}/kasm_release/install.sh -S app -e -q {{ db_ip }} -Q {{ database_password }} -R {{ redis_password }} -n {{ target_ip }} {{ '-s ' ~ service_images_copy.dest if service_images_file }} {{ '-w ' ~ workspace_images_copy.dest if workspace_images_file }}"
   register: install_output
   become: true
   retries: 20
