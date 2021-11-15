@@ -1,8 +1,8 @@
 # List of files in the files directory matching the installer, service_images, and workspace images.
 - set_fact:
-    installer_glob: "{{ lookup('fileglob', '{{role_path}}/files/kasm_workspaces_*.tar.gz', wantlist=True) }}"
-    service_images_glob: "{{ lookup('fileglob', '{{role_path}}/files/kasm_workspaces_service_images*.tar.gz', wantlist=True) }}"
-    workspace_images_glob: "{{ lookup('fileglob', '{{role_path}}/files/kasm_workspaces_workspace_images_*.tar.gz', wantlist=True) }}"
+    installer_glob: "{{ lookup('fileglob', '{{role_path}}/files/kasm_workspaces_*.tar.gz', wantlist=True) + lookup('fileglob', '{{role_path}}/files/kasm_release_*.tar.gz', wantlist=True) }}"
+    service_images_glob: "{{ lookup('fileglob', '{{role_path}}/files/kasm_workspaces_service_images*.tar.gz', wantlist=True) + lookup('fileglob', '{{role_path}}/files/kasm_release_service_images*.tar.gz', wantlist=True) }}"
+    workspace_images_glob: "{{ lookup('fileglob', '{{role_path}}/files/kasm_workspaces_workspace_images_*.tar.gz', wantlist=True) + lookup('fileglob', '{{role_path}}/files/kasm_release_workspace_images_*.tar.gz', wantlist=True)  }}"
   delegate_to: localhost
 
 - set_fact:
