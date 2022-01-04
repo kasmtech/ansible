@@ -21,7 +21,7 @@ The steps below for installing Ansible have been tested on CentOS 7.9.2009, Cent
 
 3. Use pip to install ansible
 
-    `python3 -m pip install --user -U pip && python3 -m pip install --user -U ansible`
+    `python3 -m pip install --user -U pip && python3 -m pip install --user -U ansible && python3 -m pip install --user -U jinja`
 
 4. Ensure that ansible version is greater than 2.9.24
 
