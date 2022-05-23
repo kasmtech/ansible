@@ -5,3 +5,13 @@
   retries: 20
   delay: 10
   until: install_output is success or ('Failed to lock apt for exclusive operation' not in install_output.stderr and '/var/lib/dpkg/lock' not in install_output.stderr)
+  when: test is not defined
+
+- name: Install database role - test
+  command: "bash {{ tempdir.path }}/kasm_release/install.sh -S db -e -I -Q {{database_password}} -R {{redis_password}} -U {{user_password}} -P {{admin_password}} -M {{manager_token}} {{ '-s ' ~ service_images_copy.dest if service_images_file }} {{ '-w ' ~ workspace_images_copy.dest if workspace_images_file }}"
+  register: install_output
+  become: true
+  retries: 20
+  delay: 10
+  until: install_output is success or ('Failed to lock apt for exclusive operation' not in install_output.stderr and '/var/lib/dpkg/lock' not in install_output.stderr)
+  when: test is defined
