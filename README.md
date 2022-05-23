@@ -61,6 +61,10 @@ It has been tested on CentOS 7.9.2009, CentOS 8.4.2105, Debian 9.13, Debian 10.1
 
     `ansible-playbook -u [username] -i inventory install_kasm.yml`
 
+    Additionally the deployment can be run in a "test" mode by passing the extra option test=true, this will not seed images among other test mode optimizations.
+
+    `ansible-playbook -u [username] -i inventory install_kasm.yml -e "test=true"`
+
 5. Login to the deployment as admin@kasm.local using the IP of one of the WebApp servers (eg https://192.168.1.2)
 
 6. Navigate to the Agents tab, and enable each Agent after it checks in. (May take a few minutes)
