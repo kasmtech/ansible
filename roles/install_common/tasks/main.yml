@@ -85,6 +85,13 @@
     - "'agent' in group_names"
     - not kasm_installed
 
+- name: Run Kasm guac install tasks
+  include_tasks:
+    file: guac_install.yml
+  when:
+    - "'guac' in group_names"
+    - not kasm_installed
+
 - name: enable the docker service to run at boot
   service:
     name: docker
@@ -104,6 +111,7 @@
       - "Database Password: {{ database_password }}"
       - "Redis Password: {{ redis_password }}"
       - "Manager Token: {{ manager_token }}"
+      - "Guac Token: {{ guac_token }}"
       - "user@kasm.local password: {{ user_password }}"
       - "admin@kasm.local password: {{ admin_password }}"
   run_once: true

@@ -4,6 +4,7 @@
     - db
     - web
     - agent
+    - guac
   roles:
     - patch_os
 
