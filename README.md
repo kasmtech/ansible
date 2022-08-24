@@ -73,7 +73,7 @@ It has been tested on CentOS 7.9.2009, CentOS 8.4.2105, Debian 9.13, Debian 10.1
 
 The installation can be "scaled up" after being installed by adding additional hosts to the agent or db roles in the inventory file and rerunning the playbook.
 
-Please ensure that redis_password, manager_token and database_password is set in `install_common/vars/main.yml`
+Please ensure that redis_password, manager_token and database_password is set in `roles/install_common/vars/main.yml`
 
 If you did not save the redis_password, manager_token or database_password for your existing installation, they can be obtained using the following methods.
 
