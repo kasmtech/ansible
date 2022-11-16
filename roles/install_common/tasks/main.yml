@@ -111,7 +111,7 @@
       - "Database Password: {{ database_password }}"
       - "Redis Password: {{ redis_password }}"
       - "Manager Token: {{ manager_token }}"
-      - "Guac Token: {{ guac_token }}"
+      - "Registration Token: {{ registration_token }}"
       - "user@kasm.local password: {{ user_password }}"
       - "admin@kasm.local password: {{ admin_password }}"
   run_once: true

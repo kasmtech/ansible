@@ -9,7 +9,7 @@
   delay: 5
 
 - name: Install guac role
-  command: "bash {{ tempdir.path }}/kasm_release/install.sh -S guac -e -p {{ web_ip }} -W {{ guac_token }} {{ '-s ' ~ service_images_copy.dest if service_images_file }}"
+  command: "bash {{ tempdir.path }}/kasm_release/install.sh -S guac -e --api-hostname  {{ web_ip }} --registration-token {{ registration_token }} {{ '-s ' ~ service_images_copy.dest if service_images_file }}"
   register: install_output
   become: true
   retries: 20

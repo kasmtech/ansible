@@ -1,5 +1,5 @@
 - name: Install database role
-  command: "bash {{ tempdir.path }}/kasm_release/install.sh -S db -e -Q {{database_password}} -R {{redis_password}} -U {{user_password}} -P {{admin_password}} -M {{manager_token}} -W {{guac_token}} {{ '-s ' ~ service_images_copy.dest if service_images_file }} {{ '-w ' ~ workspace_images_copy.dest if workspace_images_file }}"
+  command: "bash {{ tempdir.path }}/kasm_release/install.sh -S db -e -Q {{database_password}} -R {{redis_password}} -U {{user_password}} -P {{admin_password}} -M {{manager_token}} --registration-token {{registration_token}} {{ '-s ' ~ service_images_copy.dest if service_images_file }} {{ '-w ' ~ workspace_images_copy.dest if workspace_images_file }}"
   register: install_output
   become: true
   retries: 20
@@ -8,7 +8,7 @@
   when: test is not defined
 
 - name: Install database role - test
-  command: "bash {{ tempdir.path }}/kasm_release/install.sh -S db -e -I -Q {{database_password}} -R {{redis_password}} -U {{user_password}} -P {{admin_password}} -M {{manager_token}} -W {{guac_token}} {{ '-s ' ~ service_images_copy.dest if service_images_file }} {{ '-w ' ~ workspace_images_copy.dest if workspace_images_file }}"
+  command: "bash {{ tempdir.path }}/kasm_release/install.sh -S db -e -I -Q {{database_password}} -R {{redis_password}} -U {{user_password}} -P {{admin_password}} -M {{manager_token}} --registration-token {{registration_token}} {{ '-s ' ~ service_images_copy.dest if service_images_file }} {{ '-w ' ~ workspace_images_copy.dest if workspace_images_file }}"
   register: install_output
   become: true
   retries: 20
