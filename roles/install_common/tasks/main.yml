@@ -12,6 +12,7 @@
 - set_fact:
     db_ip: "{{ hostvars[groups['db'][0]]['ansible_default_ipv4']['address'] }}"
     web_ip: "{{ hostvars[groups['web'][0]]['ansible_default_ipv4']['address'] }}"
+    guac_ip: "{{ hostvars[groups['guac'][0]]['ansible_default_ipv4']['address'] }}"
     # IP of the host that ansible is being ran against
     target_ip: "{{ ansible_default_ipv4.address }}"
     
