@@ -1,0 +1,17 @@
+- name: Check connection from guac to webserver
+  uri:
+    url: "https://{{ web_ip }}/api/__healthcheck"
+    timeout: 5
+    validate_certs: false
+  register: _result
+  until: _result.status == 200
+  retries: 7
+  delay: 5
+
+- name: Install guac role
+  command: "bash {{ tempdir.path }}/kasm_release/install.sh -S guac -e --api-hostname  {{ web_ip }}  --public-hostname  {{ guac_ip }}  --registration-token {{ registration_token }} {{ '-s ' ~ service_images_copy.dest if service_images_file }}"
+  register: install_output
+  become: true
+  retries: 20
+  delay: 10
+  until: install_output is success or ('Failed to lock apt for exclusive operation' not in install_output.stderr and '/var/lib/dpkg/lock' not in install_output.stderr)

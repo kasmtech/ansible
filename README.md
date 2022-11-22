@@ -45,7 +45,7 @@ It has been tested on CentOS 7.9.2009, CentOS 8.4.2105, Debian 9.13, Debian 10.1
 
 1. Open `roles/install_common/vars/main.yml`, `group_vars/agent.yml` and update variables if desired.
 
-2. Open `inventory` file and fill in the hostnames / ips for the servers that will be fulfilling the agent, webapp and db roles. 
+2. Open `inventory` file and fill in the hostnames / ips for the servers that will be fulfilling the agent, webapp, db, and guac roles. 
 
 3. Download the Kasm Workspaces installer from https://www.kasmweb.com/downloads.html and copy it to `roles/install_common/files`. 
     
@@ -69,9 +69,9 @@ It has been tested on CentOS 7.9.2009, CentOS 8.4.2105, Debian 9.13, Debian 10.1
 
 6. Navigate to the Agents tab, and enable each Agent after it checks in. (May take a few minutes)
 
-### Adding Additional Agent / Webapp hosts to an existing installation
+### Adding Additional Agent / Webapp / Guac hosts to an existing installation
 
-The installation can be "scaled up" after being installed by adding additional hosts to the agent or db roles in the inventory file and rerunning the playbook.
+The installation can be "scaled up" after being installed by adding additional hosts to the agent, app, or guac roles in the inventory file and rerunning the playbook.
 
 Please ensure that redis_password, manager_token and database_password is set in `roles/install_common/vars/main.yml`
 
@@ -94,13 +94,13 @@ If you did not save the redis_password, manager_token or database_password for y
 
 ## Kasm Uninstall playbook
 
-This playbook uninstalls Kasm workspaces from DB, WebApp and Agent servers specified in the `inventory` file.
+This playbook uninstalls Kasm workspaces from DB, WebApp, Agent, and Guac servers specified in the `inventory` file.
 
-It has been tested on CentOS 7.9.2009, CentOS 8.4.2105, Debian 9.13, Debian 10.10, Ubuntu 18.04.5, and Ubuntu 20.04.3
+It has been tested on CentOS 7.9.2009, CentOS 8.4.2105, Debian 9.13, Debian 10.10, Ubuntu 18.04.5, Ubuntu 20.04.3, and Ubuntu 22.04.1
 
 ### Ansible Configuration
 
-1. Open `inventory` file and fill in the hostnames / ips for the servers that will be fulfilling the agent, webapp and db roles. 
+1. Open `inventory` file and fill in the hostnames / ips for the servers that will be fulfilling the agent, webapp, db, and guac roles. 
 
 3. Run the deployment.
 
@@ -114,15 +114,15 @@ It has been tested on CentOS 7.9.2009, CentOS 8.4.2105, Debian 9.13, Debian 10.1
 
 ## Kasm Stop/Start/Restart playbooks
 
-These playbooks can be used to start, stop or restart Kasm workspaces services on the DB, WebApp and Agent servers specified in the `inventory` file.
+These playbooks can be used to start, stop or restart Kasm workspaces services on the DB, WebApp, Agent, and Guac servers specified in the `inventory` file.
 
-It can be limited to run only on hosts in specific groups by passing `-l [db, web, or agent]` flag.
+It can be limited to run only on hosts in specific groups by passing `-l [db, web, agent, or guac]` flag.
 
 In the examples `restart_kasm.yml` can be substituted for `start_kasm.yml` or `stop_kasm.yml` for starting or stopping the kasm services respectively.
 
 ### Ansible Configuration
 
-1. Open `inventory` file and fill in the hostnames / ips for the servers that will be fulfilling the agent, webapp and db roles. 
+1. Open `inventory` file and fill in the hostnames / ips for the servers that will be fulfilling the agent, webapp, db, and guac roles. 
 
 2. Run the playbook.
 
@@ -146,7 +146,7 @@ This playbook can be used to backup the Kasm Workspaces database to a location o
 
 1. Open `roles/backup_db/vars/main.yml` and update variables if desired.
 
-2. Open `inventory` file and fill in the hostnames / ips for the servers that will be fulfilling the agent, webapp and db roles. 
+2. Open `inventory` file and fill in the hostnames / ips for the servers that will be fulfilling the agent, webapp, db, and guac roles. 
 
 3. Run the playbook.
 
@@ -166,7 +166,7 @@ This playbook is used for patching the underlying OSes on the Kasm Workspace ser
 
 1. Open `roles/patch_os/vars/main.yml` and update variables if desired.
 
-2. Open `inventory` file and fill in the hostnames / ips for the servers that will be fulfilling the agent, webapp and db roles. 
+2. Open `inventory` file and fill in the hostnames / ips for the servers that will be fulfilling the agent, webapp, db, and guac roles. 
 
 3. Run the playbook.
 

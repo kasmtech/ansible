@@ -2,5 +2,6 @@
     - db
     - web
     - agent
+    - guac
   roles:
     - uninstall

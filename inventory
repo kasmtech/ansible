@@ -4,3 +4,5 @@ ubuntu18-web
 ubuntu18-db
 [agent]
 ubuntu18-agent
+[guac]
+ubuntu18-guac
