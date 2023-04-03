@@ -1,6 +1,6 @@
 - name: Check connection from guac to webserver
   uri:
-    url: "https://{{ web_ip }}/api/__healthcheck"
+    url: "https://{{ web_ip }}:{{ proxy_port }}/api/__healthcheck"
     timeout: 5
     validate_certs: false
   register: _result
@@ -9,7 +9,7 @@
   delay: 5
 
 - name: Install guac role
-  command: "bash {{ tempdir.path }}/kasm_release/install.sh -S guac -e --api-hostname  {{ web_ip }}  --public-hostname  {{ guac_ip }}  --registration-token {{ registration_token }} {{ '-s ' ~ service_images_copy.dest if service_images_file }}"
+  command: "bash {{ tempdir.path }}/kasm_release/install.sh -S guac -e -L {{ proxy_port }} --api-hostname  {{ web_ip }}  --public-hostname  {{ guac_ip }}  --registration-token {{ registration_token }} {{ '-s ' ~ service_images_copy.dest if service_images_file }}"
   register: install_output
   become: true
   retries: 20
