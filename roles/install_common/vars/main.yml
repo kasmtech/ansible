@@ -16,5 +16,8 @@
 # Token that agents use to connect to webapp
 #manager_token: changeme
 
+# Port to listen on
+proxy_port: 443
+
 # Start docker daemon at boot
 start_docker_on_boot: true

@@ -1,6 +1,6 @@
 - name: Check connection from agent to webserver
   uri:
-    url: "https://{{ web_ip }}/api/__healthcheck"
+    url: "https://{{ web_ip }}:{{ proxy_port }}/api/__healthcheck"
     timeout: 5
     validate_certs: false
   register: _result
@@ -9,7 +9,7 @@
   delay: 5
 
 - name: Install agent role
-  command: "bash {{ tempdir.path }}/kasm_release/install.sh -S agent -e -p {{ target_ip }} -m {{ web_ip }} -M {{ manager_token }} {{ '-s ' ~ service_images_copy.dest if service_images_file }} {{ '-w ' ~ workspace_images_copy.dest if workspace_images_file }}"
+  command: "bash {{ tempdir.path }}/kasm_release/install.sh -S agent -e -L {{ proxy_port }} -p {{ target_ip }} -m {{ web_ip }} -M {{ manager_token }} {{ '-s ' ~ service_images_copy.dest if service_images_file }} {{ '-w ' ~ workspace_images_copy.dest if workspace_images_file }}"
   register: install_output
   become: true
   retries: 20
@@ -18,7 +18,7 @@
   when: test is not defined
 
 - name: Install agent role - test
-  command: "bash {{ tempdir.path }}/kasm_release/install.sh -S agent -I -e -p {{ target_ip }} -m {{ web_ip }} -M {{ manager_token }} {{ '-s ' ~ service_images_copy.dest if service_images_file }} {{ '-w ' ~ workspace_images_copy.dest if workspace_images_file }}"
+  command: "bash {{ tempdir.path }}/kasm_release/install.sh -S agent -I -e -L {{ proxy_port }} -p {{ target_ip }} -m {{ web_ip }} -M {{ manager_token }} {{ '-s ' ~ service_images_copy.dest if service_images_file }} {{ '-w ' ~ workspace_images_copy.dest if workspace_images_file }}"
   register: install_output
   become: true
   retries: 20
