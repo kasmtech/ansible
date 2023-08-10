@@ -1,8 +1,142 @@
-[web]
-ubuntu18-web
-[db]
-ubuntu18-db
-[agent]
-ubuntu18-agent
-[guac]
-ubuntu18-guac
+##################
+# Host inventory #
+##################
+all:
+  children:
+    # First zone
+    # Optionally modify names to reference zone location IE east
+    zone1:
+      children:
+        # The datbase can only be defined once, if initializing a remote database omit this host
+        # It will always be named zone1_db_1 if used, regardless of zone name modifications
+        zone1_db:
+          hosts:
+            zone1_db_1:
+              ansible_host: zone1_db_hostname 
+              ansible_port: 22
+              ansible_ssh_user: ubuntu
+              ansible_ssh_private_key_file: ~/.ssh/id_rsa
+        zone1_web:
+          hosts:
+            zone1_web_1:
+              ansible_host: zone1_web_hostname
+              ansible_port: 22
+              ansible_ssh_user: ubuntu
+              ansible_ssh_private_key_file: ~/.ssh/id_rsa
+        zone1_agent:
+          hosts:
+            zone1_agent_1:
+              ansible_host: zone1_agent_hostname
+              ansible_port: 22
+              ansible_ssh_user: ubuntu
+              ansible_ssh_private_key_file: ~/.ssh/id_rsa
+        zone1_guac:
+          hosts:
+            zone1_guac_1:
+              ansible_host: zone1_guac_hostname
+              ansible_port: 22
+              ansible_ssh_user: ubuntu
+              ansible_ssh_private_key_file: ~/.ssh/id_rsa
+        # Optional Web Proxy server
+        #zone1_proxy:
+          #hosts:
+            #zone1_proxy_1:
+              #ansible_host: zone1_proxy_hostname
+              #ansible_port: 22
+              #ansible_ssh_user: ubuntu
+              #ansible_ssh_private_key_file: ~/.ssh/id_rsa
+    # Second zone
+    # Optionally modify names to reference zone location IE west
+    #zone2:
+      #children:
+        #zone2_web:
+          #hosts:
+            #zone2_web_1:
+              #ansible_host: zone2_web_hostname
+              #ansible_port: 22
+              #ansible_ssh_user: ubuntu
+              #ansible_ssh_private_key_file: ~/.ssh/id_rsa
+        #zone2_agent:
+          #hosts:
+            #zone2_agent_1:
+              #ansible_host: zone2_agent_hostname
+              #ansible_port: 22
+              #ansible_ssh_user: ubuntu
+              #ansible_ssh_private_key_file: ~/.ssh/id_rsa
+        #zone2_guac:
+          #hosts:
+            #zone2_guac_1:
+              #ansible_host: zone2_guac_hostname
+              #ansible_port: 22
+              #ansible_ssh_user: ubuntu
+              #ansible_ssh_private_key_file: ~/.ssh/id_rsa
+        # Optional Web Proxy server
+        #zone2_proxy:
+          #hosts:
+            #zone2_proxy_1:
+              #ansible_host: zone2_proxy_hostname
+              #ansible_port: 22
+              #ansible_ssh_user: ubuntu
+              #ansible_ssh_private_key_file: ~/.ssh/id_rsa
+    ##############################
+    # Installation configuration #
+    ##############################
+  vars:
+
+    ## Credentials ##
+    # If left commented secure passwords will be generated during the installation and substituted in upon completion
+    #user_password: {{ user_password }}
+    #admin_password: {{ admin_password }}
+    #database_password: {{ database_password }}
+    #redis_password: {{ redis_password }}
+    #manager_token: {{ manager_token }}
+    #registration_token: {{ registration_token }}
+
+    ## Scaling Configuration ##
+    # Stick scaled agents/guacs/proxys to a default web server
+    # IE when set to 1 all additional hosts in that zone will use zone1_web_1 as their webserver
+    # Set to false to scale out as a linked group IE zone1_web_1/zone1_agent_1/zone1_guac_1/zone1_proxy_1
+    default_web: 1
+
+    ## Zone configuration ##
+    # Define multiple zones here if defined in inventory above
+    zones:
+      - zone1
+      #- zone2
+
+    ## General settings ##
+    proxy_port: 443
+    start_docker_on_boot: true
+    desired_swap_size: 5g # Default agent swap size for all agents
+
+    ## PostgreSQL settings ##
+    ##############################################
+    # PostgreSQL remote DB connection parameters #
+    ##############################################
+    # The following parameters need to be set only once on database initialization
+    init_remote_db: false # swap to true to activate
+    #database_master_user: postgres
+    #database_master_password: changeme
+    database_hostname: false # swap to a string to activate
+    # The remaining variables can be modified to suite your needs or left as is in a normal deployment
+    database_user: kasmapp
+    database_name: kasm
+    database_port: 5432
+    database_ssl: true
+
+    ## redis settings ##
+    # redis connection parameters if hostname is set the web role will use a remote redis server
+    redis_hostname: false
+
+    ## Database Backup settings ##
+    # These settings will only work when zone1_db_1 is set in host inventory, this does not support remote database type installations
+    # Directory where backups are placed on db server
+    remote_backup_dir: /srv/backup/kasm/
+    # Number of days that logs backups are retained on db host
+    retention_days: 10
+    # If this is uncommented, backups will be copied from remote server to the local ansible host
+    #local_backup_dir: backup/
+
+    # Number of seconds to wait for system to come up after reboot
+    # Change this if you have a system that normally takes a long time to boot
+    reboot_timeout_seconds: 600

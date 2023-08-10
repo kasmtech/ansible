@@ -1,3 +1,0 @@
-# Number of seconds to wait for system to come up after reboot
-# Change this if you have a system that normally takes a long time to boot
-reboot_timeout_seconds: 600

@@ -7,11 +7,27 @@
 - name: Check connection from web to redis on db server
   wait_for:
     port: 6379
-    host: "{{ db_ip }}"
+    host: "{{ redis_ip }}"
     timeout: 60
 
 - name: Install web role
-  command: "bash {{ tempdir.path }}/kasm_release/install.sh -S app -e -L {{ proxy_port }} -q {{ db_ip }} -Q {{ database_password }} -R {{ redis_password }} -n {{ target_ip }} {{ '-s ' ~ service_images_copy.dest if service_images_file }} {{ '-w ' ~ workspace_images_copy.dest if workspace_images_file }}"
+  command: >
+    bash {{ tempdir.path }}/kasm_release/install.sh 
+      --role app 
+      --accept-eula
+      --proxy-port {{ proxy_port }}
+      --db-hostname {{ db_ip }}
+      --db-password {{ database_password }} 
+      --redis-password {{ redis_password }} 
+      --api-hostname {{ target_ip }} 
+      --database-user {{ database_user }} 
+      --database-name {{ database_name }}
+      --db-port {{ database_port }}
+      --server-zone {{ group_names[0] }}
+      --redis-hostname {{ redis_ip }}
+      {{ '--no-db-ssl ' if not database_ssl }} 
+      {{ '--offline-service ' ~ service_images_copy.dest if service_images_file }} 
+      {{ '--offline-workspaces ' ~ workspace_images_copy.dest if workspace_images_file }}
   register: install_output
   become: true
   retries: 20

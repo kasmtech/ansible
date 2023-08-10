@@ -1,0 +1,23 @@
+- name: Add additional zones
+  when: i != 0
+  loop: "{{ zones }}"
+  loop_control:
+    index_var: i
+  blockinfile:
+    marker: "# {mark} ANSIBLE MANAGED BLOCK {{ item }}" 
+    state: present
+    insertafter: EOF
+    dest: "{{ tempdir.path }}/kasm_release/conf/database/seed_data/default_properties.yaml"
+    content: |
+        - allow_origin_domain: $request_host$
+          load_strategy: least_load
+          primary_manager_id: null
+          prioritize_static_agents: true
+          proxy_connections: true
+          proxy_hostname: $request_host$
+          proxy_path: desktop
+          proxy_port: {{ proxy_port }}
+          search_alternate_zones: true
+          upstream_auth_address: $request_host$
+          zone_id: "${uuid:zone_id:{{ i + 1 }}}"
+          zone_name: {{ item }}

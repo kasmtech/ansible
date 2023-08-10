@@ -1,8 +1,0 @@
-# Directory where backups are placed on db server
-remote_backup_dir: /srv/backup/kasm/
-
-# Number of days that logs backups are retained on db host
-retention_days: 10
-
-# If this is uncommented, backups will be copied from remote server to the local ansible host
-#local_backup_dir: backup/

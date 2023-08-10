@@ -1,17 +1,23 @@
 - name: Install database role
-  command: "bash {{ tempdir.path }}/kasm_release/install.sh -S db -e -L {{proxy_port}} -Q {{database_password}} -R {{redis_password}} -U {{user_password}} -P {{admin_password}} -M {{manager_token}} --registration-token {{registration_token}} {{ '-s ' ~ service_images_copy.dest if service_images_file }} {{ '-w ' ~ workspace_images_copy.dest if workspace_images_file }}"
+  command: > 
+    bash {{ tempdir.path }}/kasm_release/install.sh 
+      --role db 
+      --accept-eula 
+      --proxy-port {{ proxy_port }} 
+      --database-user {{ database_user }} 
+      --database-name {{ database_name }}
+      --db-password {{ database_password }} 
+      --redis-password {{ redis_password }} 
+      --user-password {{ user_password }} 
+      --admin-password {{ admin_password }} 
+      --manager-token {{ manager_token }} 
+      --registration-token {{ registration_token }}
+      --server-zone {{ zones[0] }}
+      {{ '--no-db-ssl ' if not database_ssl }} 
+      {{ '--offline-service ' ~ service_images_copy.dest if service_images_file }} 
+      {{ '--offline-workspaces ' ~ workspace_images_copy.dest if workspace_images_file }}
   register: install_output
   become: true
   retries: 20
   delay: 10
   until: install_output is success or ('Failed to lock apt for exclusive operation' not in install_output.stderr and '/var/lib/dpkg/lock' not in install_output.stderr)
-  when: test is not defined
-
-- name: Install database role - test
-  command: "bash {{ tempdir.path }}/kasm_release/install.sh -S db -e -L {{proxy_port}} -I -Q {{database_password}} -R {{redis_password}} -U {{user_password}} -P {{admin_password}} -M {{manager_token}} --registration-token {{registration_token}} {{ '-s ' ~ service_images_copy.dest if service_images_file }} {{ '-w ' ~ workspace_images_copy.dest if workspace_images_file }}"
-  register: install_output
-  become: true
-  retries: 20
-  delay: 10
-  until: install_output is success or ('Failed to lock apt for exclusive operation' not in install_output.stderr and '/var/lib/dpkg/lock' not in install_output.stderr)
-  when: test is defined
