@@ -1,8 +1,4 @@
-- hosts:
-    - db
-    - web
-    - agent
-    - guac
+- hosts: all
   serial: 1
   gather_facts: no
   tasks:

@@ -62,6 +62,10 @@
     docker images kasmweb/manager-private -q
     docker images kasmweb/api -q
     docker images kasmweb/api-private -q
+    docker images kasmweb/guac -q
+    docker images kasmweb/guac-private -q
+    docker images kasmweb/proxy -q
+    docker images kasmweb/proxy-private -q
     docker images redis -q
     docker images postgres -q
     

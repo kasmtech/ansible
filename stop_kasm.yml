@@ -1,7 +1,4 @@
-- hosts:
-    - agent
-    - web
-    - db
+- hosts: all
   serial: 1
   gather_facts: no
   tasks:

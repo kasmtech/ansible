@@ -1,10 +1,6 @@
 - import_playbook: stop_kasm.yml
 
-- hosts:
-    - db
-    - web
-    - agent
-    - guac
+- hosts: all
   roles:
     - patch_os
 

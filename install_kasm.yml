@@ -1,8 +1,4 @@
-- hosts:
-    - db
-    - web
-    - agent
-    - guac
+- hosts: all
   roles:
     - install_common
   any_errors_fatal: true

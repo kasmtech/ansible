@@ -1,4 +1,4 @@
-- name: Check connection from agent to webserver
+- name: Check connection from proxy to webserver
   uri:
     url: "https://{{ web_ip }}:{{ proxy_port }}/api/__healthcheck"
     timeout: 5
@@ -8,17 +8,14 @@
   retries: 7
   delay: 5
 
-- name: Install agent role
+- name: Install proxy role
   command: >
     bash {{ tempdir.path }}/kasm_release/install.sh 
-      --role agent 
+      --role proxy 
       --accept-eula 
       --proxy-port {{ proxy_port }} 
-      --public-hostname {{ target_ip }} 
-      --manager-hostname {{ web_ip }} 
-      --manager-token {{ manager_token }} 
-      {{ '-s ' ~ service_images_copy.dest if service_images_file }} 
-      {{ '-w ' ~ workspace_images_copy.dest if workspace_images_file }}
+      --api-hostname {{ web_ip }} 
+      {{ '-s ' ~ service_images_copy.dest if service_images_file }}
   register: install_output
   become: true
   retries: 20

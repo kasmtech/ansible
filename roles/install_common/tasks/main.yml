@@ -10,12 +10,33 @@
     kasm_installed: "{{ kasm_path.stat.exists }}"
 
 - set_fact:
-    db_ip: "{{ hostvars[groups['db'][0]]['ansible_default_ipv4']['address'] }}"
-    web_ip: "{{ hostvars[groups['web'][0]]['ansible_default_ipv4']['address'] }}"
-    guac_ip: "{{ hostvars[groups['guac'][0]]['ansible_default_ipv4']['address'] }}"
+    web_ip: "{{ hostvars[group_names[0] + '_web_' + inventory_hostname.split('_')[2]].ansible_default_ipv4.address }}"
     # IP of the host that ansible is being ran against
     target_ip: "{{ ansible_default_ipv4.address }}"
-    
+  when: not default_web
+
+- set_fact:
+    web_ip: "{{ hostvars[group_names[0] + '_web_' + default_web|string].ansible_default_ipv4.address }}"
+    # IP of the host that ansible is being ran against
+    target_ip: "{{ ansible_default_ipv4.address }}"
+  when: default_web
+
+- set_fact:
+    db_ip: "{{ hostvars['zone1_db_1'].ansible_default_ipv4.address }}"
+  when: not database_hostname
+
+- set_fact:
+    db_ip: "{{ database_hostname }}"
+  when: database_hostname
+
+- set_fact:
+    redis_ip: "{{ hostvars['zone1_db_1'].ansible_default_ipv4.address }}"
+  when: not redis_hostname
+
+- set_fact:
+    redis_ip: "{{ redis_hostname }}"
+  when: redis_hostname
+
 - name: Override manager hostname if configured
   set_fact:
     web_ip: "{{ manager_hostname }}"
@@ -25,25 +46,34 @@
   stat:
     path: /mnt/kasm.swap
   register: kasm_swapfile
+  when:
+    - "'agent' in group_names[1].split('_')"
 
 - name: Get current swapsize in bytes
   # Meminfo outputs in Kb for some reason so we convert to bytes
   shell: cat /proc/meminfo | grep SwapTotal | awk '{print $2 * 1024}'
   register: current_swap_size
   changed_when: false
+  when:
+    - "'agent' in group_names[1].split('_')"
 
 - set_fact:
     # We only want to make a swapfile large enough to make up the difference between
     # the current swapsize and our desired size.
     new_swap_size: "{{ desired_swap_size | human_to_bytes - current_swap_size.stdout | int }}"
+  when:
+    - "'agent' in group_names[1].split('_')"
 
 - debug:
     var: new_swap_size
+  when:
+    - "'agent' in group_names[1].split('_')"
 
 - name: Run swap tasks
   include_tasks:
     file: mkswap.yml
   when:
+    - "'agent' in group_names[1].split('_')"
     - new_swap_size | int > 0
     - not kasm_swapfile.stat.exists
 
@@ -65,32 +95,54 @@
   when:
     - not kasm_installed
 
+- name: Add additional zones tasks
+  include_tasks:
+    file: add_zones.yml
+  when:
+    - not kasm_installed
+
 - name: Run Kasm db install tasks
   include_tasks:
     file: db_install.yml
-  when: 
-    - "'db' in group_names"
+  when:
+    - "'db' in group_names[1].split('_')"
+    - not kasm_installed
+
+- name: Run remote db init tasks
+  include_tasks:
+    file: remote_db_init.yml
+  when:
+    - init_remote_db
+    - database_hostname
+    - "'web' in group_names[1].split('_')"
     - not kasm_installed
 
 - name: Run Kasm web install tasks
   include_tasks:
     file: web_install.yml
-  when: 
-    - "'web' in group_names"
+  when:
+    - "'web' in group_names[1].split('_')"
     - not kasm_installed
 
 - name: Run Kasm agent install tasks
   include_tasks:
     file: agent_install.yml
-  when: 
-    - "'agent' in group_names"
+  when:
+    - "'agent' in group_names[1].split('_')" 
     - not kasm_installed
 
 - name: Run Kasm guac install tasks
   include_tasks:
     file: guac_install.yml
   when:
-    - "'guac' in group_names"
+    - "'guac' in group_names[1].split('_')"
+    - not kasm_installed
+
+- name: Run Kasm proxy install tasks
+  include_tasks:
+    file: proxy_install.yml
+  when:
+    - "'proxy' in group_names[1].split('_')"
     - not kasm_installed
 
 - name: enable the docker service to run at boot
@@ -116,3 +168,36 @@
       - "user@kasm.local password: {{ user_password }}"
       - "admin@kasm.local password: {{ admin_password }}"
   run_once: true
+
+- name: Write credentials to inventory
+  run_once: true
+  delegate_to: localhost
+  ansible.builtin.template:
+    src: "{{ inventory_file }}"
+    dest: "{{ inventory_file }}"
+
+- name: Set credentials to active
+  run_once: true
+  delegate_to: localhost
+  ansible.builtin.replace:
+    dest: "{{ inventory_file }}"
+    regexp: "{{ item.from }}"
+    replace: "{{ item.to }}"
+  loop:
+    - {from: "#user_password", to: "user_password"}
+    - {from: "#admin_password", to: "admin_password"}
+    - {from: "#database_password", to: "database_password"}
+    - {from: "#redis_password", to: "redis_password"}
+    - {from: "#manager_token", to: "manager_token"}
+    - {from: "#registration_token", to: "registration_token"}
+
+- name: Turn off remote db init
+  run_once: true
+  delegate_to: localhost
+  ansible.builtin.replace:
+    dest: "{{ inventory_file }}"
+    regexp: "init_remote_db: true"
+    replace: "init_remote_db: false"
+  when:
+    - init_remote_db
+    - database_hostname
