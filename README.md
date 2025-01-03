@@ -204,19 +204,19 @@ If for any reason you have misplaced your inventory file post installation crede
 - Existing Database password can be obtained by logging into a webapp host and running the following command:
 
 ```
-sudo grep " password" /opt/kasm/current/conf/app/api.app.config.yaml
+sudo grep " password" /opt/kasm/current/conf/app/api/api.app.config.yaml
 ```
 
 - Existing Redis password can be obtained by logging into a webapp host and running the following command:
 
 ```
-sudo grep "redis_password" /opt/kasm/current/conf/app/api.app.config.yaml
+sudo grep "redis_password" /opt/kasm/current/conf/app/api/api.app.config.yaml
 ```
 
 - Existing Manager token can be obtained by logging into an agent host and running the following command:
 
 ```
-sudo grep "token" /opt/kasm/current/conf/app/agent.app.config.yaml
+sudo grep "token" /opt/kasm/current/conf/app/agent/agent.app.config.yaml
 ```
 
 ### Deploying with a remote database
