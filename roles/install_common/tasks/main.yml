@@ -110,7 +110,6 @@
   debug:
     msg:
       - "Database Password: {{ database_password }}"
-      - "Redis Password: {{ redis_password }}"
       - "Manager Token: {{ manager_token }}"
       - "Registration Token: {{ registration_token }}"
       - "user@kasm.local password: {{ user_password }}"

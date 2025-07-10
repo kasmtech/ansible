@@ -54,17 +54,13 @@
   shell: |
     docker images --filter "label=com.kasmweb.image=true" -q
     docker images kasmweb/nginx -q
-    docker images kasmweb/share -q
-    docker images kasmweb/share-private -q
     docker images kasmweb/agent -q
     docker images kasmweb/agent-private -q
     docker images kasmweb/manager -q
     docker images kasmweb/manager-private -q
     docker images kasmweb/api -q
     docker images kasmweb/api-private -q
-    docker images redis -q
-    docker images postgres -q
-    
+    docker images postgres -q   
   register: kasm_images
   become: true
   ignore_errors: true
