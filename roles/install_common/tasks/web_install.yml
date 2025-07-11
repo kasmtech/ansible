@@ -4,6 +4,11 @@
     host: "{{ db_ip }}"
     timeout: 60
 
+- name: Wait for instance to come back
+  wait_for_connection:
+    delay: 10
+    timeout: 300
+
 - name: Install web role
   command: "bash {{ tempdir.path }}/kasm_release/install.sh -S app -e -L {{ proxy_port }} -q {{ db_ip }} -Q {{ database_password }} -n {{ target_ip }} {{ '-s ' ~ service_images_copy.dest if service_images_file }} {{ '-w ' ~ workspace_images_copy.dest if workspace_images_file }}"
   register: install_output
