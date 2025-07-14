@@ -4,6 +4,5 @@
     - agent
     - guac
   roles:
-    - patch_os
     - install_common
   any_errors_fatal: true
