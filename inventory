@@ -88,7 +88,6 @@ all:
     #user_password: {{ user_password }}
     #admin_password: {{ admin_password }}
     #database_password: {{ database_password }}
-    #redis_password: {{ redis_password }}
     #manager_token: {{ manager_token }}
     #registration_token: {{ registration_token }}
 
@@ -123,10 +122,6 @@ all:
     database_name: kasm
     database_port: 5432
     database_ssl: true
-
-    ## redis settings ##
-    # redis connection parameters if hostname is set the web role will use a remote redis server
-    redis_hostname: false
 
     ## Database Backup settings ##
     # These settings will only work when zone1_db_1 is set in host inventory, this does not support remote database type installations

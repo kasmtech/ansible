@@ -7,7 +7,6 @@
       --database-user {{ database_user }} 
       --database-name {{ database_name }}
       --db-password {{ database_password }} 
-      --redis-password {{ redis_password }} 
       --user-password {{ user_password }} 
       --admin-password {{ admin_password }} 
       --manager-token {{ manager_token }} 

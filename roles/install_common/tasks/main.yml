@@ -29,14 +29,6 @@
     db_ip: "{{ database_hostname }}"
   when: database_hostname
 
-- set_fact:
-    redis_ip: "{{ hostvars['zone1_db_1'].ansible_default_ipv4.address }}"
-  when: not redis_hostname
-
-- set_fact:
-    redis_ip: "{{ redis_hostname }}"
-  when: redis_hostname
-
 - name: Override manager hostname if configured
   set_fact:
     web_ip: "{{ manager_hostname }}"
@@ -162,7 +154,6 @@
   debug:
     msg:
       - "Database Password: {{ database_password }}"
-      - "Redis Password: {{ redis_password }}"
       - "Manager Token: {{ manager_token }}"
       - "Registration Token: {{ registration_token }}"
       - "user@kasm.local password: {{ user_password }}"
@@ -187,7 +178,6 @@
     - {from: "#user_password", to: "user_password"}
     - {from: "#admin_password", to: "admin_password"}
     - {from: "#database_password", to: "database_password"}
-    - {from: "#redis_password", to: "redis_password"}
     - {from: "#manager_token", to: "manager_token"}
     - {from: "#registration_token", to: "registration_token"}
 

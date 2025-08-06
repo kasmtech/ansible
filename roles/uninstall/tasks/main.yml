@@ -81,7 +81,6 @@
     docker images kasmweb/kasm-guac-private -q
     docker images kasmweb/proxy -q
     docker images kasmweb/proxy-private -q
-    docker images redis -q
     docker images postgres -q
     docker images kasmweb/rdp-gateway -q
     docker images kasmweb/rdp-gateway-private -q
