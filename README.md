@@ -96,7 +96,6 @@ Before running the installation against a modified inventory file please ensure 
     user_password: PASSWORD
     admin_password: PASSWORD
     database_password: PASSWORD
-    redis_password: PASSWORD
     manager_token: PASSWORD
     registration_token: PASSWORD
 ```
@@ -207,12 +206,6 @@ If for any reason you have misplaced your inventory file post installation crede
 sudo grep " password" /opt/kasm/current/conf/app/api/api.app.config.yaml
 ```
 
-- Existing Redis password can be obtained by logging into a webapp host and running the following command:
-
-```
-sudo grep "redis_password" /opt/kasm/current/conf/app/api/api.app.config.yaml
-```
-
 - Existing Manager token can be obtained by logging into an agent host and running the following command:
 
 ```
@@ -252,10 +245,6 @@ In order to deploy with a dedicated remote database that is not managed by ansib
     database_name: kasm
     database_port: 5432
     database_ssl: true
-    ## redis settings ##
-    # redis connection parameters if hostname is set the web role will use a remote redis server
-    redis_hostname: REDIS_HOSTNAME
-    redis_password: REDIS_PASSWORD
 ```
 
 3. Run the deployment:

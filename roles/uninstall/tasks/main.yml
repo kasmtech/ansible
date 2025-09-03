@@ -67,8 +67,6 @@
   shell: |
     docker images --filter "label=com.kasmweb.image=true" -q
     docker images kasmweb/nginx -q
-    docker images kasmweb/share -q
-    docker images kasmweb/share-private -q
     docker images kasmweb/agent -q
     docker images kasmweb/agent-private -q
     docker images kasmweb/manager -q
@@ -81,7 +79,6 @@
     docker images kasmweb/kasm-guac-private -q
     docker images kasmweb/proxy -q
     docker images kasmweb/proxy-private -q
-    docker images redis -q
     docker images postgres -q
     docker images kasmweb/rdp-gateway -q
     docker images kasmweb/rdp-gateway-private -q
