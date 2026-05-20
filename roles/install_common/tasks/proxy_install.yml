@@ -1,6 +1,7 @@
+---
 - name: Check connection from proxy to webserver
-  uri:
-    url: "https://{{ web_ip }}:{{ proxy_port }}/api/__healthcheck"
+  ansible.builtin.uri:
+    url: "https://{{ install_common_web_host }}:{{ proxy_port }}/api/__healthcheck"
     timeout: 5
     validate_certs: false
   register: _result
@@ -9,15 +10,16 @@
   delay: 5
 
 - name: Install proxy role
-  command: >
-    bash {{ tempdir.path }}/kasm_release/install.sh 
-      --role proxy 
-      --accept-eula 
-      --proxy-port {{ proxy_port }} 
-      --api-hostname {{ web_ip }} 
-      {{ '-s ' ~ service_images_copy.dest if service_images_file }}
+  ansible.builtin.command: >
+    bash {{ install_common_tempdir.path }}/kasm_release/install.sh
+      --role proxy
+      --accept-eula
+      --proxy-port {{ proxy_port }}
+      --api-hostname {{ install_common_web_host }}
+      {{ '-s ' ~ install_common_service_images_copy.dest if install_common_service_images_file }}
   register: install_output
   become: true
   retries: 20
   delay: 10
-  until: install_output is success or ('Failed to lock apt for exclusive operation' not in install_output.stderr and '/var/lib/dpkg/lock' not in install_output.stderr)
+  until: install_output is success or ('Failed to lock apt for exclusive operation' not in install_output.stderr and '/var/lib/dpkg/lock' not in
+    install_output.stderr)

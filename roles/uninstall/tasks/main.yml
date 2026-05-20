@@ -1,70 +1,71 @@
+---
 - name: Check for kasm service containers
-  shell: docker ps -f name=kasm_* -qa
+  ansible.builtin.shell: docker ps -f name=kasm_* -qa
   register: service_containers
   changed_when: false
   become: true
   ignore_errors: true
 
 - name: Remove any kasm service containers
-  shell: "docker rm -f {{ item }}"
+  ansible.builtin.command: "docker rm -f {{ item }}"
   become: true
   ignore_errors: true
   with_items: "{{ service_containers.stdout_lines }}"
 
 - name: Check for kasm session containers
-  shell: docker container ls -qa --filter=label=kasm.kasmid
+  ansible.builtin.command: docker container ls -qa --filter=label=kasm.kasmid
   register: session_containers
   changed_when: false
   become: true
   ignore_errors: true
-  
+
 - name: Remove any kasm session containers
-  shell: "docker rm -f {{ item }}"
+  ansible.builtin.command: "docker rm -f {{ item }}"
   ignore_errors: true
   become: true
   with_items: "{{ session_containers.stdout_lines }}"
 
 - name: Check for kasm docker network
-  shell: docker network ls -q -f name=kasm_default_network
+  ansible.builtin.command: docker network ls -q -f name=kasm_default_network
   register: kasm_network
   become: true
   ignore_errors: true
   changed_when: false
 
 - name: Remove kasm docker network
-  shell: docker network rm kasm_default_network
+  ansible.builtin.command: docker network rm kasm_default_network
   ignore_errors: true
   become: true
   when: kasm_network.stdout | length > 0
 
 - name: Check for kasm sidecar network
-  shell: docker network ls -q -f name=kasm_sidecar_network
+  ansible.builtin.command: docker network ls -q -f name=kasm_sidecar_network
   register: kasm_sidecar_network
   become: true
   ignore_errors: true
   changed_when: false
 
 - name: Remove kasm sidecar network
-  shell: docker network rm kasm_sidecar_network
+  ansible.builtin.command: docker network rm kasm_sidecar_network
   ignore_errors: true
   become: true
   when: kasm_sidecar_network.stdout | length > 0
 
 - name: Get kasm database docker volume
-  shell: docker volume ls --filter name=kasm_db_* -q
+  ansible.builtin.shell: docker volume ls --filter name=kasm_db_* -q
   ignore_errors: true
   become: true
   register: kasm_database
   changed_when: false
 
 - name: Remove kasm database docker volume
-  shell: "docker volume rm {{ item }}"
+  ansible.builtin.command: "docker volume rm {{ item }}"
   ignore_errors: true
   become: true
   with_items: "{{ kasm_database.stdout_lines }}"
 
 - name: Get kasm docker images
-  shell: |
+  ansible.builtin.shell: |
     docker images --filter "label=com.kasmweb.image=true" -q
     docker images kasmweb/nginx -q
     docker images kasmweb/agent -q
@@ -90,34 +91,34 @@
   changed_when: false
 
 - name: Remove kasm docker images
-  shell: "docker rmi {{ item }}"
+  ansible.builtin.command: "docker rmi {{ item }}"
   become: true
   ignore_errors: true
   with_items: "{{ kasm_images.stdout_lines }}"
 
 - name: Get sidecar plugin
-  shell: "docker plugin ls"
+  ansible.builtin.command: "docker plugin ls"
   become: true
   ignore_errors: true
   changed_when: false
   register: plugin_list
 
 - name: Filter sidecar plugin
-  set_fact:
-    sidecar_plugins: "{{ plugin_list.stdout_lines | select('match', '.*Kasm Network plugin for Docker.*') | list }}" 
+  ansible.builtin.set_fact:
+    sidecar_plugins: "{{ plugin_list.stdout_lines | select('match', '.*Kasm Network plugin for Docker.*') | list }}"
 
 - name: Disable sidecar plugin
-  shell: "docker plugin disable {{item.split()[1]}}" # Grab second column... It contains the plugin name
+  ansible.builtin.command: "docker plugin disable {{item.split()[1]}}"
   become: true
   with_items: "{{ sidecar_plugins }}"
 
 - name: Remove sidecar plugin
-  shell: "docker plugin rm {{item.split()[1]}}" # Grab second column... It contains the plugin name
+  ansible.builtin.command: "docker plugin rm {{item.split()[1]}}"
   become: true
   with_items: "{{ sidecar_plugins }}"
 
 - name: Remove kasm install directory
-  file:
+  ansible.builtin.file:
     path: /opt/kasm/
     state: absent
   become: true
