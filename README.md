@@ -286,3 +286,8 @@ Using these playbooks assumes you have allready gone through the installation pr
     * Modify `retention_days` in inventory to change the number of days that logs backups are retained on db host
     * Set `local_backup_dir` to define a path on the local ansible host where backups will be stored, if unset backups will only exist on the remote server
 * OS Patching (patch_os.yml)- This will update system packages and reboot on all hosts defined in inventory or optionally be limited to a zone, group or single server passing the `--limit` flag. Example Usage `ansible-playbook -i inventory --limit zone1_agent_1 patch_os.yml`
+
+
+## Reporting Issues
+
+To report any issues for this repository, please use our central issue tracker: **[Kasm Workspaces Issue Tracker](https://github.com/kasmtech/workspaces-issues/issues)**
