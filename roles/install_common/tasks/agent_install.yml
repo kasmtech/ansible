@@ -1,6 +1,7 @@
+---
 - name: Check connection from agent to webserver
-  uri:
-    url: "https://{{ web_ip }}:{{ proxy_port }}/api/__healthcheck"
+  ansible.builtin.uri:
+    url: "https://{{ install_common_web_host }}:{{ proxy_port }}/api/__healthcheck"
     timeout: 5
     validate_certs: false
   register: _result
@@ -9,19 +10,20 @@
   delay: 5
 
 - name: Install agent role
-  command: >
-    bash {{ tempdir.path }}/kasm_release/install.sh 
-      --role agent 
-      --accept-eula 
-      --proxy-port {{ proxy_port }} 
-      --public-hostname {{ target_ip }} 
-      --manager-hostname {{ web_ip }} 
-      --manager-token {{ manager_token }} 
-      {{ '-s ' ~ service_images_copy.dest if service_images_file }} 
-      {{ '-w ' ~ workspace_images_copy.dest if workspace_images_file }}
-      {{ '-x ' ~ network_plugin_copy.dest if network_plugin_file }}
+  ansible.builtin.command: >
+    bash {{ install_common_tempdir.path }}/kasm_release/install.sh
+      --role agent
+      --accept-eula
+      --proxy-port {{ proxy_port }}
+      --public-hostname {{ install_common_target_host }}
+      --manager-hostname {{ install_common_web_host }}
+      --manager-token {{ manager_token }}
+      {{ '-s ' ~ install_common_service_images_copy.dest if install_common_service_images_file }}
+      {{ '-w ' ~ install_common_workspace_images_copy.dest if install_common_workspace_images_file }}
+      {{ '-x ' ~ install_common_network_plugin_copy.dest if install_common_network_plugin_file }}
   register: install_output
   become: true
   retries: 20
   delay: 10
-  until: install_output is success or ('Failed to lock apt for exclusive operation' not in install_output.stderr and '/var/lib/dpkg/lock' not in install_output.stderr)
+  until: install_output is success or ('Failed to lock apt for exclusive operation' not in install_output.stderr and '/var/lib/dpkg/lock' not in
+    install_output.stderr)

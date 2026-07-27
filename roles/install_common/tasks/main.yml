@@ -1,157 +1,153 @@
-- include_tasks: 
+---
+- name: Set default credentials
+  ansible.builtin.include_tasks:
     file: default_credentials.yml
 
 - name: Check if Kasm is installed
-  stat: 
+  ansible.builtin.stat:
     path: /opt/kasm/current
-  register: kasm_path
+  register: install_common_kasm_path
 
-- set_fact:
-    kasm_installed: "{{ kasm_path.stat.exists }}"
+- name: Set install_common_kasm_installed fact
+  ansible.builtin.set_fact:
+    install_common_kasm_installed: "{{ install_common_kasm_path.stat.exists }}"
 
-- set_fact:
-    web_ip: "{{ hostvars[group_names[0] + '_web_' + inventory_hostname.split('_')[2]].ansible_default_ipv4.address }}"
+- name: Set web_ip to current host if default_web is false
+  ansible.builtin.set_fact:
+    install_common_web_host: "{{ hostvars[group_names[0] + '_web_' + inventory_hostname.split('_')[2]].ansible_facts['fqdn'] }}"
     # IP of the host that ansible is being ran against
-    target_ip: "{{ ansible_default_ipv4.address }}"
-  when: not default_web
+    install_common_target_host: "{{ ansible_facts['fqdn'] }}"
+  when: not (default_web | bool)
 
-- set_fact:
-    web_ip: "{{ hostvars[group_names[0] + '_web_' + default_web|string].ansible_default_ipv4.address }}"
+- name: Set web_ip to default web host if default_web is true
+  ansible.builtin.set_fact:
+    install_common_web_host: "{{ hostvars[group_names[0] + '_web_' + default_web | string].ansible_facts['fqdn'] }}"
     # IP of the host that ansible is being ran against
-    target_ip: "{{ ansible_default_ipv4.address }}"
-  when: default_web
+    install_common_target_host: "{{ ansible_facts['fqdn'] }}"
+  when: default_web | bool
 
-- set_fact:
-    db_ip: "{{ hostvars['zone1_db_1'].ansible_default_ipv4.address }}"
+- name: Set default db host if database_hostname is not set
+  ansible.builtin.set_fact:
+    install_common_db_host: "{{ hostvars['zone1_db_1'].ansible_facts['fqdn'] }}"
   when: not database_hostname
 
-- set_fact:
-    db_ip: "{{ database_hostname }}"
+- name: Set db host to database_hostname if it is set
+  ansible.builtin.set_fact:
+    install_common_db_host: "{{ database_hostname }}"
   when: database_hostname
 
 - name: Override manager hostname if configured
-  set_fact:
-    web_ip: "{{ manager_hostname }}"
+  ansible.builtin.set_fact:
+    install_common_web_host: "{{ manager_hostname }}"
   when: manager_hostname is defined
 
 - name: Check if kasm swapfile exists
-  stat:
+  ansible.builtin.stat:
     path: /mnt/kasm.swap
-  register: kasm_swapfile
+  register: install_common_kasm_swapfile
   when:
     - "'agent' in group_names[1].split('_')"
 
-- name: Get current swapsize in bytes
-  # Meminfo outputs in Kb for some reason so we convert to bytes
-  shell: cat /proc/meminfo | grep SwapTotal | awk '{print $2 * 1024}'
-  register: current_swap_size
-  changed_when: false
-  when:
-    - "'agent' in group_names[1].split('_')"
-
-- set_fact:
+- name: Calculate new swap size
+  ansible.builtin.set_fact:
     # We only want to make a swapfile large enough to make up the difference between
     # the current swapsize and our desired size.
-    new_swap_size: "{{ desired_swap_size | human_to_bytes - current_swap_size.stdout | int }}"
-  when:
-    - "'agent' in group_names[1].split('_')"
-
-- debug:
-    var: new_swap_size
+    install_common_new_swap_size: "{{ desired_swap_size | human_to_bytes - (ansible_facts['memory_mb']['swap']['total'] * 1024 * 1024) | int }}"
   when:
     - "'agent' in group_names[1].split('_')"
 
 - name: Run swap tasks
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: mkswap.yml
   when:
     - "'agent' in group_names[1].split('_')"
-    - new_swap_size | int > 0
-    - not kasm_swapfile.stat.exists
+    - install_common_new_swap_size | int > 0
+    - not install_common_kasm_swapfile.stat.exists
 
 - name: Create temporary directory
-  tempfile:
+  ansible.builtin.tempfile:
     state: directory
-  register: tempdir
+  register: install_common_tempdir
 
 # Debian 10 doesn't ship with the ca-certificates package installed by default
 # installing curl is portable to to ensure that ca-certificates is installed
 - name: Ensure we have curl installed
-  package:
+  ansible.builtin.package:
     name: curl
     state: present
   become: true
 
-- include_tasks:
+- name: Copy installer and images to target host
+  ansible.builtin.include_tasks:
     file: copy_installer.yml
   when:
-    - not kasm_installed
+    - not install_common_kasm_installed
 
 - name: Add additional zones tasks
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: add_zones.yml
   when:
-    - not kasm_installed
+    - not install_common_kasm_installed
 
 - name: Run Kasm db install tasks
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: db_install.yml
   when:
     - "'db' in group_names[1].split('_')"
-    - not kasm_installed
+    - not install_common_kasm_installed
 
 - name: Run remote db init tasks
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: remote_db_init.yml
   when:
     - init_remote_db
     - database_hostname
     - "'web' in group_names[1].split('_')"
-    - not kasm_installed
+    - not install_common_kasm_installed
 
 - name: Run Kasm web install tasks
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: web_install.yml
   when:
     - "'web' in group_names[1].split('_')"
-    - not kasm_installed
+    - not install_common_kasm_installed
 
 - name: Run Kasm agent install tasks
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: agent_install.yml
   when:
-    - "'agent' in group_names[1].split('_')" 
-    - not kasm_installed
+    - "'agent' in group_names[1].split('_')"
+    - not install_common_kasm_installed
 
 - name: Run Kasm guac install tasks
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: guac_install.yml
   when:
     - "'guac' in group_names[1].split('_')"
-    - not kasm_installed
+    - not install_common_kasm_installed
 
 - name: Run Kasm proxy install tasks
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: proxy_install.yml
   when:
     - "'proxy' in group_names[1].split('_')"
-    - not kasm_installed
+    - not install_common_kasm_installed
 
-- name: enable the docker service to run at boot
-  service:
+- name: Enable the docker service to run at boot
+  ansible.builtin.service:
     name: docker
     enabled: true
   become: true
   when: start_docker_on_boot
-  
+
 - name: Delete temporary directory
-  file:
-    path: "{{ tempdir.path }}"
+  ansible.builtin.file:
+    path: "{{ install_common_tempdir.path }}"
     state: absent
   become: true
 
 - name: Print credentials
-  debug:
+  ansible.builtin.debug:
     msg:
       - "Database Password: {{ database_password }}"
       - "Manager Token: {{ manager_token }}"
@@ -175,11 +171,11 @@
     regexp: "{{ item.from }}"
     replace: "{{ item.to }}"
   loop:
-    - {from: "#user_password", to: "user_password"}
-    - {from: "#admin_password", to: "admin_password"}
-    - {from: "#database_password", to: "database_password"}
-    - {from: "#manager_token", to: "manager_token"}
-    - {from: "#registration_token", to: "registration_token"}
+    - { from: "#user_password", to: "user_password" }
+    - { from: "#admin_password", to: "admin_password" }
+    - { from: "#database_password", to: "database_password" }
+    - { from: "#manager_token", to: "manager_token" }
+    - { from: "#registration_token", to: "registration_token" }
 
 - name: Turn off remote db init
   run_once: true
