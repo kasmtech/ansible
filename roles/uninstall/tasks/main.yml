@@ -1,3 +1,43 @@
+- name: Get list of systemd services
+  ansible.builtin.service_facts:
+  become: true
+  ignore_errors: true
+
+- name: Stop and disable kasm systemd service
+  ansible.builtin.systemd:
+    name: "kasm.service"
+    state: "stopped"
+    enabled: false
+  become: true
+  when: ansible_facts['services']['kasm.service']['status'] | default('not-found') != 'not-found'
+
+- name: Remove kasm service file
+  ansible.builtin.file:
+    path: /etc/systemd/system/kasm.service
+    state: absent
+  become: true
+  when: ansible_facts['services']['kasm.service']['status'] | default('not-found') != 'not-found'
+
+- name: Stop and disable kasm network plugin systemd service
+  ansible.builtin.systemd:
+    name: "kasm-network-plugin.service"
+    state: "stopped"
+    enabled: false
+  become: true
+  when: ansible_facts['services']['kasm-network-plugin.service']['status'] | default('not-found') != 'not-found'
+
+- name: Remove kasm network plugin service file
+  ansible.builtin.file:
+    path: /etc/systemd/system/kasm-network-plugin.service
+    state: absent
+  become: true
+  when: ansible_facts['services']['kasm-network-plugin.service']['status'] | default('not-found') != 'not-found'
+
+- name: Reload systemd daemon
+  ansible.builtin.systemd:
+    daemon_reload: true
+  become: true
+
 - name: Check for kasm service containers
   shell: docker ps -f name=kasm_* -qa
   register: service_containers
