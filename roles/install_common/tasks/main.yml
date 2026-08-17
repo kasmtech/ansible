@@ -1,8 +1,8 @@
-- include_tasks: 
+- include_tasks:
     file: default_credentials.yml
 
 - name: Check if Kasm is installed
-  stat: 
+  stat:
     path: /opt/kasm/current
   register: kasm_path
 
@@ -10,19 +10,19 @@
     kasm_installed: "{{ kasm_path.stat.exists }}"
 
 - set_fact:
-    web_ip: "{{ hostvars[group_names[0] + '_web_' + inventory_hostname.split('_')[2]].ansible_default_ipv4.address }}"
+    web_ip: "{{ hostvars[group_names[0] + '_web_' + inventory_hostname.split('_')[2]].ansible_facts['default_ipv4']['address'] }}"
     # IP of the host that ansible is being ran against
-    target_ip: "{{ ansible_default_ipv4.address }}"
-  when: not default_web
+    target_ip: "{{ ansible_facts['default_ipv4']['address'] }}"
+  when: not (default_web | int > 0)
 
 - set_fact:
-    web_ip: "{{ hostvars[group_names[0] + '_web_' + default_web|string].ansible_default_ipv4.address }}"
+    web_ip: "{{ hostvars[group_names[0] + '_web_' + default_web|string].ansible_facts['default_ipv4']['address'] }}"
     # IP of the host that ansible is being ran against
-    target_ip: "{{ ansible_default_ipv4.address }}"
-  when: default_web
+    target_ip: "{{ ansible_facts['default_ipv4']['address'] }}"
+  when: default_web | int > 0
 
 - set_fact:
-    db_ip: "{{ hostvars['zone1_db_1'].ansible_default_ipv4.address }}"
+    db_ip: "{{ hostvars['zone1_db_1'].ansible_facts['default_ipv4']['address'] }}"
   when: not database_hostname
 
 - set_fact:
@@ -120,7 +120,7 @@
   include_tasks:
     file: agent_install.yml
   when:
-    - "'agent' in group_names[1].split('_')" 
+    - "'agent' in group_names[1].split('_')"
     - not kasm_installed
 
 - name: Run Kasm guac install tasks
@@ -143,7 +143,7 @@
     enabled: true
   become: true
   when: start_docker_on_boot
-  
+
 - name: Delete temporary directory
   file:
     path: "{{ tempdir.path }}"
