@@ -87,6 +87,11 @@
   when:
     - not kasm_installed
 
+- include_tasks:
+    file: slipstream_install_config.yml
+  when:
+    - not kasm_installed
+
 - name: Add additional zones tasks
   include_tasks:
     file: add_zones.yml
