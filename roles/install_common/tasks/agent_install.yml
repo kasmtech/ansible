@@ -20,6 +20,7 @@
       {{ '-s ' ~ service_images_copy.dest if service_images_file }} 
       {{ '-w ' ~ workspace_images_copy.dest if workspace_images_file }}
       {{ '-x ' ~ network_plugin_copy.dest if network_plugin_file }}
+      {{ '--offline-logger-plugin ' ~ logging_plugin_copy.dest if logging_plugin_file }}
   register: install_output
   become: true
   retries: 20

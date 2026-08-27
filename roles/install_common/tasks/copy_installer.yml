@@ -3,15 +3,17 @@
     installer_glob: "{{ lookup('fileglob', '{{role_path}}/files/kasm_workspaces_*.tar.gz', wantlist=True) + lookup('fileglob', '{{role_path}}/files/kasm_release_*.tar.gz', wantlist=True) }}"
     service_images_glob: "{{ lookup('fileglob', '{{role_path}}/files/kasm_workspaces_service_images*.tar.gz', wantlist=True) + lookup('fileglob', '{{role_path}}/files/kasm_release_service_images*.tar.gz', wantlist=True) }}"
     workspace_images_glob: "{{ lookup('fileglob', '{{role_path}}/files/kasm_workspaces_workspace_images_*.tar.gz', wantlist=True) + lookup('fileglob', '{{role_path}}/files/kasm_release_workspace_images_*.tar.gz', wantlist=True)  }}"
-    network_plugin_glob: "{{ lookup('fileglob', '{{role_path}}//files/kasmweb_network_plugin_*.tar.gz', wantlist=True)}}"
+    network_plugin_glob: "{{ lookup('fileglob', '{{role_path}}//files/kasmweb_network_plugin_*.tar.gz', wantlist=True) + lookup('fileglob', '{{role_path}}//files/kasm_release_network_plugin_images_*.tar.gz', wantlist=True)}}"
+    logging_plugin_glob: "{{ lookup('fileglob', '{{role_path}}//files/kasmweb_logging_plugin_*.tar.gz', wantlist=True) + lookup('fileglob', '{{role_path}}//files/kasm_release_logging_plugin_images_*.tar.gz', wantlist=True)}}"
   delegate_to: localhost
 
 - set_fact:
     # Our installer glob search will also include service_images and workspace_images so we filter them out with difference()
-    installer_file: "{{ installer_glob | difference(service_images_glob) | difference(workspace_images_glob) | first | default(None) }}"
+    installer_file: "{{ installer_glob | difference(service_images_glob) | difference(workspace_images_glob) | difference(network_plugin_glob) | difference(logging_plugin_glob) | first | default(None) }}"
     service_images_file: "{{ service_images_glob | first | default(None) }}"
     workspace_images_file: "{{ workspace_images_glob | first | default(None) }}"
     network_plugin_file: "{{ network_plugin_glob | first | default(None) }}"
+    logging_plugin_file: "{{ logging_plugin_glob | first | default(None) }}"
 
 - name: Assert that Kasm installer exists
   assert:
@@ -46,3 +48,10 @@
     dest: "{{ tempdir.path }}"
   register: network_plugin_copy
   when: network_plugin_file
+
+- name: Copy Logging Plugin
+  copy:
+    src: "{{ logging_plugin_file }}"
+    dest: "{{ tempdir.path }}"
+  register: logging_plugin_copy
+  when: logging_plugin_file

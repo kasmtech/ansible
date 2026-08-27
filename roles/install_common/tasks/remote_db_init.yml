@@ -26,6 +26,7 @@
         --admin-password {{ admin_password }}
         {{ '--no-db-ssl ' if not database_ssl }}
         {{ '--offline-service ' ~ service_images_copy.dest if service_images_file }}
+        {{ '--offline-workspaces ' ~ workspace_images_copy.dest if workspace_images_file }}
     responses:
       Continue(?i): "y"
   run_once: true
