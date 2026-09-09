@@ -4,11 +4,12 @@ These projects are intended as starting examples for automating Kasm Workspaces 
 
 ### Installing Ansible
 
-This project requires ansible 2.9.24 or greater on the host running the ansible playbook. The target systems do no not need Ansible installed.
+This project requires Ansible 2.21 or greater on the host running the Ansible playbook.
+The target systems do not need Ansible installed.
 
 #### Pip Method
 
-The steps below for installing Ansible have been tested on CentOS 7.9.2009, CentOS 8.4.2105, Debian 9.13, Debian 10.10, Ubuntu 18.04.5, Ubuntu 20.04.3, and Ubuntu 22.04.2. This should function on any Linux distribution with Python3.
+The steps below for installing Ansible have been tested on CentOS 7.9.2009, CentOS 8.4.2105, Debian 9.13, Debian 10.10, Ubuntu 18.04.5, Ubuntu 20.04.3, Ubuntu 22.04.2 and Ubuntu 24.04.4.This should function on any Linux distribution with Python3.
 
 1. Ensure pip3 is installed 
     

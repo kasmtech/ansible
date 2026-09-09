@@ -1,9 +1,9 @@
 # List of files in the files directory matching the installer, service_images, and workspace images.
 - set_fact:
-    installer_glob: "{{ lookup('fileglob', '{{role_path}}/files/kasm_workspaces_*.tar.gz', wantlist=True) + lookup('fileglob', '{{role_path}}/files/kasm_release_*.tar.gz', wantlist=True) }}"
-    service_images_glob: "{{ lookup('fileglob', '{{role_path}}/files/kasm_workspaces_service_images*.tar.gz', wantlist=True) + lookup('fileglob', '{{role_path}}/files/kasm_release_service_images*.tar.gz', wantlist=True) }}"
-    workspace_images_glob: "{{ lookup('fileglob', '{{role_path}}/files/kasm_workspaces_workspace_images_*.tar.gz', wantlist=True) + lookup('fileglob', '{{role_path}}/files/kasm_release_workspace_images_*.tar.gz', wantlist=True)  }}"
-    network_plugin_glob: "{{ lookup('fileglob', '{{role_path}}//files/kasmweb_network_plugin_*.tar.gz', wantlist=True)}}"
+    installer_glob: "{{ lookup('fileglob', role_path + '/files/kasm_workspaces_*.tar.gz', wantlist=True) + lookup('fileglob', role_path + '/files/kasm_release_*.tar.gz', wantlist=True) }}"
+    service_images_glob: "{{ lookup('fileglob', role_path + '/files/kasm_workspaces_service_images*.tar.gz', wantlist=True) + lookup('fileglob', role_path + '/files/kasm_release_service_images*.tar.gz', wantlist=True) }}"
+    workspace_images_glob: "{{ lookup('fileglob', role_path + '/files/kasm_workspaces_workspace_images_*.tar.gz', wantlist=True) + lookup('fileglob', role_path + '/files/kasm_release_workspace_images_*.tar.gz', wantlist=True) }}"
+    network_plugin_glob: "{{ lookup('fileglob', role_path + '/files/kasmweb_network_plugin_*.tar.gz', wantlist=True) }}"
   delegate_to: localhost
 
 - set_fact:
@@ -16,10 +16,10 @@
 - name: Assert that Kasm installer exists
   assert:
     that:
-      - installer_file
+      - installer_file is not none and installer_file | length > 0
     fail_msg:
       - "Kasm installer not found"
-      - "Ensure that kasm_workspaces installer tarfile is in {{role_path}}/files/"
+      - "Ensure that kasm_workspaces installer tarfile is in {{ role_path }}/files/"
 
 - name: unarchive kasm installer
   unarchive:
@@ -31,18 +31,18 @@
     src: "{{ service_images_file }}"
     dest: "{{ tempdir.path }}"
   register: service_images_copy
-  when: service_images_file
+  when: service_images_file is not none and service_images_file | length > 0
 
 - name: Copy Workspace images
   copy:
     src: "{{ workspace_images_file }}"
     dest: "{{ tempdir.path }}"
   register: workspace_images_copy
-  when: workspace_images_file
+  when: workspace_images_file is not none and workspace_images_file | length > 0
 
 - name: Copy Network Plugin
   copy:
     src: "{{ network_plugin_file }}"
     dest: "{{ tempdir.path }}"
   register: network_plugin_copy
-  when: network_plugin_file
+  when: network_plugin_file is not none and network_plugin_file | length > 0
