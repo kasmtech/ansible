@@ -15,8 +15,8 @@
       --accept-eula 
       --proxy-port {{ proxy_port }} 
       --public-hostname {{ target_ip }} 
-      --manager-hostname {{ web_ip }}
-      --manager-token {{ manager_token }}
+      --agent-registration-hostname {{ web_ip }}
+      --agent-token {{ manager_token }}
       --otel-collector-hostname {{ web_ip }}
       --otel-token {{ otel_token }}
       {{ '-s ' ~ service_images_copy.dest if service_images_file }}

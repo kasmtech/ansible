@@ -20,7 +20,7 @@
         --db-master-password {{ database_master_password }}
         --db-port {{ database_port }}
         --server-zone {{ zones[0] }}
-        --manager-token {{ manager_token }}
+        --agent-token {{ manager_token }}
         --registration-token {{ registration_token }}
         --user-password {{ user_password }}
         --admin-password {{ admin_password }}

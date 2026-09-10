@@ -9,7 +9,7 @@
       --db-password {{ database_password }}
       --user-password {{ user_password }}
       --admin-password {{ admin_password }}
-      --manager-token {{ manager_token }}
+      --agent-token {{ manager_token }}
       --registration-token {{ registration_token }}
       --otel-collector-hostname {{ web_ip }}
       --otel-token {{ otel_token }}
