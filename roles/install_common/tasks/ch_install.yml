@@ -1,0 +1,15 @@
+- name: Install clickhouse role
+  command: >
+    bash {{ tempdir.path }}/kasm_release/install.sh
+      --role clickhouse
+      --accept-eula
+      --proxy-port {{ proxy_port }}
+      --clickhouse-password {{ ch_password }}
+      --clickhouse-reader-password {{ ch_reader_password }}
+      --server-zone {{ zones[0] }}
+      {{ '--offline-service ' ~ service_images_copy.dest if service_images_file }}
+  register: install_output
+  become: true
+  retries: 20
+  delay: 10
+  until: install_output is success or ('Failed to lock apt for exclusive operation' not in install_output.stderr and '/var/lib/dpkg/lock' not in install_output.stderr)
