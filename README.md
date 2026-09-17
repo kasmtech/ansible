@@ -28,7 +28,7 @@ source ~/.bashrc
 
 `python3 -m pip install --user -U pip && python3 -m pip install --user -U ansible`
 
-4. Ensure that ansible version is greater than 2.9.24
+4. Ensure that ansible version is greater than 2.20
 
 `ansible --version`
 
@@ -80,6 +80,8 @@ It has been tested on CentOS 7.9.2009, CentOS 8.4.2105, Debian 9.13, Debian 10.1
 7. Navigate to the Agents tab, and enable each Agent after it checks in. (May take a few minutes)
 
 **Post installation your local inventory file will be modified with the appropriate credentials please make a copy or keep this somewhere safe**
+
+**Security recommendation:** If you left the credential fields commented out and let the installer auto-generate them, we recommend logging in and changing the `admin@kasm.local` and `user@kasm.local` passwords (and rotating the database password / manager / registration tokens) after your first login, rather than continuing to rely on the generated defaults. Auto-generated credentials are written to your inventory file and briefly appear on the installer's command line during setup, so anyone with access to that file or to the install session's process list could retrieve them. Rotating credentials after install removes that exposure window.
 
 **If any deployment errors occur please run the uninstall_kasm.yml playbook against the same inventory file before trying again as there might be half set credentials leading to a broken deployment, see the helper playbooks section for more information**
 
