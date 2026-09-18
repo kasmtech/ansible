@@ -19,6 +19,7 @@
       {{ '--offline-service ' ~ service_images_copy.dest if service_images_file }}
       {{ '--offline-workspaces ' ~ workspace_images_copy.dest if workspace_images_file }}
   register: install_output
+  no_log: true
   become: true
   no_log: true
   retries: 20

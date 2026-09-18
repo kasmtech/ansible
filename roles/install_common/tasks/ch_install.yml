@@ -9,6 +9,7 @@
       --server-zone {{ zones[0] }}
       {{ '--offline-service ' ~ service_images_copy.dest if service_images_file }}
   register: install_output
+  no_log: true
   become: true
   retries: 20
   delay: 10

@@ -23,6 +23,7 @@
       {{ '-w ' ~ workspace_images_copy.dest if workspace_images_file }}
       {{ '-x ' ~ network_plugin_copy.dest if network_plugin_file }}
   register: install_output
+  no_log: true
   become: true
   no_log: true
   retries: 20

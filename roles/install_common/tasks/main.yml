@@ -1,6 +1,31 @@
 - include_tasks:
     file: default_credentials.yml
 
+- name: Write credentials to inventory
+  run_once: true
+  delegate_to: localhost
+  ansible.builtin.template:
+    src: "{{ inventory_file }}"
+    dest: "{{ inventory_file }}"
+
+- name: Set credentials to active
+  run_once: true
+  delegate_to: localhost
+  ansible.builtin.replace:
+    dest: "{{ inventory_file }}"
+    regexp: "{{ item.from }}"
+    replace: "{{ item.to }}"
+  loop:
+    - {from: "#user_password", to: "user_password"}
+    - {from: "#admin_password", to: "admin_password"}
+    - {from: "#database_password", to: "database_password"}
+    - {from: "#ch_password", to: "ch_password"}
+    - {from: "#ch_reader_password", to: "ch_reader_password"}
+    - {from: "#otel_token", to: "otel_token"}
+    - {from: "#otel_db_monitor_password", to: "otel_db_monitor_password"}
+    - {from: "#manager_token", to: "manager_token"}
+    - {from: "#registration_token", to: "registration_token"}
+
 - name: Check if Kasm is installed
   stat:
     path: /opt/kasm/current
@@ -165,31 +190,6 @@
     state: absent
   become: true
 
-
-- name: Write credentials to inventory
-  run_once: true
-  delegate_to: localhost
-  ansible.builtin.template:
-    src: "{{ inventory_file }}"
-    dest: "{{ inventory_file }}"
-
-- name: Set credentials to active
-  run_once: true
-  delegate_to: localhost
-  ansible.builtin.replace:
-    dest: "{{ inventory_file }}"
-    regexp: "{{ item.from }}"
-    replace: "{{ item.to }}"
-  loop:
-    - {from: "#user_password", to: "user_password"}
-    - {from: "#admin_password", to: "admin_password"}
-    - {from: "#database_password", to: "database_password"}
-    - {from: "#ch_password", to: "ch_password"}
-    - {from: "#ch_reader_password", to: "ch_reader_password"}
-    - {from: "#otel_token", to: "otel_token"}
-    - {from: "#otel_db_monitor_password", to: "otel_db_monitor_password"}
-    - {from: "#manager_token", to: "manager_token"}
-    - {from: "#registration_token", to: "registration_token"}
 
 - name: Turn off remote db init
   run_once: true

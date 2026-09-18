@@ -24,10 +24,14 @@
         --registration-token {{ registration_token }}
         --user-password {{ user_password }}
         --admin-password {{ admin_password }}
+        --otel-collector-hostname {{ web_ip }}
+        --otel-token {{ otel_token }}
+        --otel-db-monitor-password {{ otel_db_monitor_password }}
         {{ '--no-db-ssl ' if not database_ssl }}
         {{ '--offline-service ' ~ service_images_copy.dest if service_images_file }}
     responses:
       Continue(?i): "y"
+  no_log: true
   run_once: true
   become: true
   no_log: true
