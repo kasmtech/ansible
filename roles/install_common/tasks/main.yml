@@ -190,7 +190,6 @@
     state: absent
   become: true
 
-
 - name: Turn off remote db init
   run_once: true
   delegate_to: localhost
