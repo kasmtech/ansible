@@ -30,3 +30,4 @@
       Continue(?i): "y"
   run_once: true
   become: true
+  no_log: true

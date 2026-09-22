@@ -20,6 +20,7 @@
       {{ '-s ' ~ service_images_copy.dest if service_images_file }}
   register: install_output
   become: true
+  no_log: true
   retries: 20
   delay: 10
   until: install_output is success or ('Failed to lock apt for exclusive operation' not in install_output.stderr and '/var/lib/dpkg/lock' not in install_output.stderr)
