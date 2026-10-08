@@ -73,6 +73,8 @@
     docker images kasmweb/manager-private -q
     docker images kasmweb/api -q
     docker images kasmweb/api-private -q
+    docker images kasmweb/appserver -q
+    docker images kasmweb/appserver-private -q
     docker images kasmweb/guac -q
     docker images kasmweb/guac-private -q
     docker images kasmweb/kasm-guac -q
