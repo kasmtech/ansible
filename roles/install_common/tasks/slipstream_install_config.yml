@@ -1,0 +1,18 @@
+- set_fact:
+  custom_default_properties_glob: "{{ lookup('fileglob', '{{role_path}}/files/default_properties.yaml') }}"
+
+- set fact:
+  custom_default_properties_file: "{{ custom_default_properties_glob | first | default(None) }}"
+
+- name: Copy slipsteam install config
+  copy:
+    src: "{{role_path}}/files/default_properties.yaml"
+    dest: "{{ tempdir.path }}/kasm_release/conf/database/seed_data/default_properties.yaml"
+  when: custom_default_properties_file
+
+- name: Set Upstream Auth Address
+  ansible.builtin.shell:
+    cmd: '{{ tempdir.path }}/kasm_release/bin/utils/yq_$(uname -m) -i ''(.zones.[0]) .upstream_auth_address = "{{ manager_hostname }}"'' {{ tempdir.path }}/kasm_release/conf/database/seed_data/default_properties.yaml'
+  become: true
+  when:
+    - manager_hostname
