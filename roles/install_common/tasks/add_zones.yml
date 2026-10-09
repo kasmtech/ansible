@@ -18,6 +18,6 @@
           proxy_path: desktop
           proxy_port: {{ proxy_port }}
           search_alternate_zones: true
-          upstream_auth_address: $request_host$
+          upstream_auth_address: {{ management_hostname | default("$request_host$") }}
           zone_id: "${uuid:zone_id:{{ i + 1 }}}"
           zone_name: {{ item }}
