@@ -7,7 +7,7 @@ all:
     # Optionally modify names to reference zone location IE east
     zone1:
       children:
-        # The datbase can only be defined once, if initializing a remote database omit this host
+        # The database can only be defined once, if initializing a remote database omit this host
         # It will always be named zone1_db_1 if used, regardless of zone name modifications
         zone1_db:
           hosts:
@@ -34,6 +34,13 @@ all:
           hosts:
             zone1_guac_1:
               ansible_host: zone1_guac_hostname
+              ansible_port: 22
+              ansible_ssh_user: ubuntu
+              ansible_ssh_private_key_file: ~/.ssh/id_rsa
+        zone1_ch:
+          hosts:
+            zone1_ch_1:
+              ansible_host: zone1_ch_hostname
               ansible_port: 22
               ansible_ssh_user: ubuntu
               ansible_ssh_private_key_file: ~/.ssh/id_rsa
@@ -88,6 +95,10 @@ all:
     #user_password: {{ user_password }}
     #admin_password: {{ admin_password }}
     #database_password: {{ database_password }}
+    #ch_password: {{ ch_password }}
+    #ch_reader_password: {{ ch_reader_password }}
+    #otel_token: {{ otel_token }}
+    #otel_db_monitor_password: {{ otel_db_monitor_password }}
     #manager_token: {{ manager_token }}
     #registration_token: {{ registration_token }}
 
@@ -122,6 +133,13 @@ all:
     database_name: kasm
     database_port: 5432
     database_ssl: true
+
+    ## ClickHouse settings ##
+    ####################################################
+    # ClickHouse remote server connection parameters   #
+    ####################################################
+    # Set to a hostname/IP to use a remote/external clickhouse server instead of provisioning zone1_ch_1
+    ch_hostname: false # swap to a string to activate
 
     ## Database Backup settings ##
     # These settings will only work when zone1_db_1 is set in host inventory, this does not support remote database type installations

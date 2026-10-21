@@ -15,10 +15,13 @@
       --accept-eula 
       --proxy-port {{ proxy_port }} 
       --api-hostname {{ web_ip }} 
-      --public-hostname {{ target_ip }} 
-      --registration-token {{ registration_token }} 
+      --public-hostname {{ target_ip }}
+      --registration-token {{ registration_token }}
+      --otel-collector-hostname {{ web_ip }}
+      --otel-token {{ otel_token }}
       {{ '-s ' ~ service_images_copy.dest if service_images_file }}
   register: install_output
+  no_log: true
   become: true
   no_log: true
   retries: 20
