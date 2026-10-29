@@ -203,7 +203,7 @@ Included in inventory is a commeted section laying out a second zone. The names 
 
 If for any reason you have misplaced your inventory file post installation credentials for the installation can be recovered using:
 
-- Existing Database password can be obtained by logging into a webapp host and running the following command:
+- Existing Database password can be obtained by logging into an AppServer host and running the following command:
 
 ```
 sudo grep " password" /opt/kasm/current/conf/app/api/api.app.config.yaml
